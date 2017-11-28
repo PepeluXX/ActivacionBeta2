@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "380762305938",
+    "firebase_url": "https://activacionbeta.firebaseio.com",
+    "project_id": "activacionbeta",
+    "storage_bucket": "activacionbeta.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380762305938:android:3612cecfadcffdbf",
+        "android_client_info": {
+          "package_name": "com.example.lourdes.activacionbeta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380762305938-n4643u5m8mfih7aeahlij69uoh1t8qvt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lourdes.activacionbeta",
+            "certificate_hash": "c857e66383eb37607f87d9ab34878db91087e2e3"
+          }
+        },
+        {
+          "client_id": "380762305938-77hj8dlnu0f5ci19bc0fue96faha2r8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXGhLzcCYceen35Q6PypI-2_FFrN_l28c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380762305938-77hj8dlnu0f5ci19bc0fue96faha2r8u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
