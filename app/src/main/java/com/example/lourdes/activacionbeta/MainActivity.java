@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private TextView textViewToken;
+    private TextView textViewTokenaso;
     private EditText editTextDNI,editTextPassword;
     private Button botonRegistro;
     private static final String URL_REGISTRO_TOKEN= "http://185.196.254.88/ActivacionBeta/v1/TokenRegistration.php";
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textViewToken = (TextView)findViewById(R.id.textViewToken);
+        textViewTokenaso = (TextView)findViewById(R.id.textViewToken);
 
         editTextDNI = (EditText) findViewById(R.id.editTextDNI);
 
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         botonRegistro.setOnClickListener(this);
 
-        textViewToken.setText(SharedPrefManager.getInstance(this).getToken());
+        textViewTokenaso.setText(SharedPrefManager.getInstance(this).getToken());
 
     }
 
