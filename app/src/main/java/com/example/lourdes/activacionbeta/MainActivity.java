@@ -26,6 +26,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private TextView textViewToken;
+
     private EditText editTextDNI,editTextPassword;
     private Button botonRegistro;
     private static final String URL_REGISTRO_TOKEN= "http://185.196.254.88/ActivacionBeta/v1/TokenRegistration.php";

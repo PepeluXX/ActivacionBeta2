@@ -25,6 +25,7 @@ public class SharedPrefManager {
         return mInstance;
     }
 
+
     public boolean storeToken(String token){
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
