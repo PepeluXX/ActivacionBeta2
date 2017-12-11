@@ -1,7 +1,10 @@
 package com.example.lourdes.activacionbeta;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 /**
  * Created by Lourdes on 20/11/2017.
@@ -13,6 +16,8 @@ public class SharedPrefManager {
     private static SharedPrefManager mInstance;
     private static final String SHARED_PREF_NAME="mi_caja_de_datos";
     private static final String KEY_TOKEN = "token";
+
+
 
     private SharedPrefManager(Context context)
     {

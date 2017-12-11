@@ -1,5 +1,10 @@
 package com.example.lourdes.activacionbeta;
 
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -20,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +34,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textViewToken;
     private EditText editTextDNI,editTextPassword;
     private Button botonRegistro;
-    private static final String URL_REGISTRO_TOKEN= "http://185.196.254.88/ActivacionBeta/v1/TokenRegistration.php";
+    private String marka;
+    private static final String URL_REGISTRO_TOKEN= "http://192.168.0.103/ActivacionBeta/v1/TokenRegistration.php";
+
+    String respuesta_servidor;
+
+    final BDDHelper mDbHelper = new BDDHelper(this);
 
 
     @Override
@@ -41,14 +52,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         botonRegistro = (Button)findViewById(R.id.botonRegistro);
 
-        botonRegistro.setOnClickListener(this);
+        String token = SharedPrefManager.getInstance(this).getToken();
 
-        textViewToken.setText(SharedPrefManager.getInstance(this).getToken());
+
+        //Aquí comienza la gestión del inicio de la aplicación.
+        //En primer lugar se comprueba si el registro en el portal web se ha producido y si se ha generado el token.
+        //Si es la primera vez que se ha iniciado la aplicación, aparecerá el formulario para rellenar los datos.
+        //Si el registro desde la aplicación ya se ha realizado, el formulario no se vuelve a mostrar nunca más (sólo en caso de desisntalación y reinstalación)
+        // y se pasa a la actividad que contiene el menú principal para la gestión de mensajes.
+        //El token se guarda en la base de datos únicamente si el registro en el portal web ha sido exitoso.
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        //GET token
+        String[] projection = {
+                EstructuraBDD.COLUMNA_TOKEN
+        };
+
+        //WHERE id = 1
+        String selection = EstructuraBDD.COLUMNA_ID + " = ?";
+        String[] selectionArgs = {"1"};
+
+        try{
+            Cursor cursor = db.query(
+                    EstructuraBDD.TABLE_NAME,                     // The table to query
+                    projection,                               // The columns to return
+                    selection,                                // The columns for the WHERE clause
+                    selectionArgs,                            // The values for the WHERE clause
+                    null,                                     // don't group the rows
+                    null,                                     // don't filter by row groups
+                    null                                 // The sort order
+            );
+
+            cursor.moveToFirst();
+
+
+             //¿El token está guardado en la base de datos? esto implica que el registro en el portal (desde la aplicación) se produjo con éxito
+
+            if(cursor.getString(0)!=null){
+
+                //si el registro ya se produjo, pasamos al menú principal de gestión de mensajes
+
+                Toast.makeText(this,"La BD existe", Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(this,MenuPrincipal.class);
+
+                startActivity(intent); //pasamos al menú de gestión de mensajes
+
+                finish(); //finalizamos MainActivity
+            }
+
+        }catch(Exception e){
+            Toast.makeText(this,e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        //Se pone el botón de registro a la escucha de eventos para cuando sea pulsado
+
+        botonRegistro.setOnClickListener(this);
 
     }
 
 
+
+    //Función registraToken se encarga de conectar con el portal web y, si el usuario se encuentra previamente registrado en el portal,
+    //se registra el token en la BBDD, si dicho registro se produce con éxito, entonces se guarda el token también en la BBDD de la aplicación, para
+    //la posterior comprobación y para que así el formulario de inicio no vuelva a mostrarse en posteriores ejecuciones de la aplicación
+
     public void registraToken(){
+
+        //se recogen los datos insertados por el usuario
 
         final String dni = editTextDNI.getText().toString().trim();
         final String password = editTextPassword.getText().toString().trim();
@@ -59,10 +131,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this,"Por favor rellene los campos necesarios", Toast.LENGTH_LONG).show();
 
 
-        }//se comprueba si el token fue generado y guardado
+        }
+        //se comprueba si el token fue generado y guardado
         else{
             if(SharedPrefManager.getInstance(this).getToken() != null){
 
+
+                //se configura la petición POST que vamos a enviarle al portal web
 
                 StringRequest stringRequest = new StringRequest(
 
@@ -72,13 +147,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         new Response.Listener<String>() {
 
+                            //se configuran las acciones a realizar cuando se obtiene una respuesta desde el portal web
+
                             @Override
                             public void onResponse(String response) {
 
                                 try{
                                     JSONObject obj = new JSONObject(response);
 
+                                    respuesta_servidor = obj.getString("message");
+
                                     Toast.makeText(getApplicationContext(),obj.getString("message"),Toast.LENGTH_LONG).show();
+
+                                    //¿Se ha registrado correctamente el token en la BBDD del portal web?
+
+                                    if(respuesta_servidor.equals("Token registrado ok")) {
+
+                                        //comienza la inserción del token en la BBDD sqlite
+
+                                        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+                                        //Se crea un nuevo map de valores (key,value), donde los nombres de las columnas de la tabla son las keys
+
+                                        ContentValues values = new ContentValues();
+
+                                        values.put(EstructuraBDD.COLUMNA_ID, "1");
+                                        values.put(EstructuraBDD.COLUMNA_TOKEN, SharedPrefManager.getInstance(getApplicationContext()).getToken());
+
+                                        // Se inserta la nueva fila y se devuelver el valor de la clave primaria (id) de la nueva fila insertada, en caso de error devolverá -1
+
+                                        long newRowId = db.insert(EstructuraBDD.TABLE_NAME, null, values);
+
+                                        if(newRowId != -1) {
+                                            Toast.makeText(getApplicationContext(), "Se guardó el registro con clave: " +
+                                                    newRowId, Toast.LENGTH_LONG).show();
+
+
+                                            textViewToken.setText(SharedPrefManager.getInstance(getApplicationContext()).getToken());
+
+                                            Intent intent = new Intent(getApplicationContext(), MenuPrincipal.class);
+
+                                            startActivity(intent);
+
+                                            finish();
+                                        }
+                                        else{
+                                            Toast.makeText(getApplicationContext(), "Ha fallado la inserción del token en la BBDD SQLite", Toast.LENGTH_LONG).show();
+                                        }
+
+                                    }else{Toast.makeText(getApplicationContext(),"El registro del token en el portal web ha fallado",Toast.LENGTH_LONG).show();}
 
                                 }catch(JSONException e){
 
@@ -86,6 +203,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                             }
                         },
+                        //recogemos cualquier fallo que ocurra al realizar la petición POST al portal web
+
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
@@ -93,6 +212,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         }
                 ){
+
+                    //se configuran los parámetros de la petición POST
+
                     @Override
                     protected Map<String,String> getParams() throws AuthFailureError {
 
@@ -105,6 +227,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         return params;
                     }
                 };
+
+                //una vez configurados la petición, la añadimos a la queue
+
                 RequestQueue requestQueue = Volley.newRequestQueue(this);
 
                 requestQueue.add(stringRequest);
@@ -115,6 +240,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
+    //sobre escritura del método onClick()
 
     @Override
     public void onClick(View view) {
