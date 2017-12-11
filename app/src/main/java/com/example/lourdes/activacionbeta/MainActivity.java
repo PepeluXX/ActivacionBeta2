@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         values.put(EstructuraBDD.COLUMNA_ID, "1");
                                         values.put(EstructuraBDD.COLUMNA_TOKEN, SharedPrefManager.getInstance(getApplicationContext()).getToken());
 
-                                        // Se inserta la nueva fila y se devuelver el valor de la clave primaria (id) de la nueva fila insertada, en caso de error devolverá -1
+                                        // Se inserta la nueva fila y se devuelve el valor de la clave primaria (id) de la nueva fila insertada, en caso de error devolverá -1
 
                                         long newRowId = db.insert(EstructuraBDD.TABLE_NAME, null, values);
 
@@ -185,6 +186,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                             textViewToken.setText(SharedPrefManager.getInstance(getApplicationContext()).getToken());
 
+
+                                            //creamos las tablas necesarias, una para cada hijo
+
+                                            String nombres_hijos = obj.getString("nombres_hijos");
+
+                                            Toast.makeText(getApplicationContext(), "nombres_hijos: " +
+                                                    nombres_hijos, Toast.LENGTH_LONG).show();
+
+                                            //String nombres_hijos = "Nerea,Antonio";
+
+                                            //int count = nombres_hijos.length() - nombres_hijos.replace(",", ",").length();
+                                            int count = 0;
+                                            String aux = "";
+
+                                            for (int i=0; i < nombres_hijos.length(); i++) {
+
+                                                aux = nombres_hijos.substring(i, i + 1);
+
+                                                if (aux.equals(",")) {
+                                                    count++;
+                                                }
+                                            }
+                                            count+=1;
+
+                                            Toast.makeText(getApplicationContext(),"Count ="+count,Toast.LENGTH_SHORT).show();
+                                            String [] array_nombres = new String[count];
+                                            int i1 =0;
+
+                                            while(!nombres_hijos.equals("")){
+
+                                                Toast.makeText(getApplicationContext(),"dentro del while",Toast.LENGTH_LONG).show();
+                                                // Toast.makeText(getApplicationContext(),"hola!!!",Toast.LENGTH_SHORT).show();
+                                                if(nombres_hijos.indexOf(",")==-1){
+                                                    array_nombres[i1] = nombres_hijos;
+                                                    nombres_hijos="";
+                                                    Toast.makeText(getApplicationContext(),"array_nombres["+i1+"] = "+array_nombres[i1],Toast.LENGTH_LONG).show();
+                                                }
+                                                else{
+                                                    String nombre_aux = nombres_hijos.substring(0,nombres_hijos.indexOf(","));
+
+                                                    Toast.makeText(getApplicationContext(),"nombre_aux = "+nombre_aux,Toast.LENGTH_LONG).show();
+
+                                                    array_nombres[i1] = nombre_aux;
+
+                                                    nombres_hijos = nombres_hijos.substring(nombres_hijos.indexOf(",")+1,nombres_hijos.length());
+
+                                                    Toast.makeText(getApplicationContext(),"array_nombres["+i1+"] = "+array_nombres[i1],Toast.LENGTH_LONG).show();
+
+                                                    i1++;
+                                                }
+                                            }
+                                            for(int i = 0;i<array_nombres.length;i++){
+
+                                                String CREA_TABLA_HIJO =
+                                                        "CREATE TABLE " + array_nombres[i]+ " (" +
+                                                                 "id INTEGER PRIMARY KEY," +
+                                                                 "mensaje TEXT," +
+                                                                 "fecha TEXT,"+"" +
+                                                                 "profesor TEXT)";
+
+
+                                                try {
+                                                    db.execSQL(CREA_TABLA_HIJO);
+
+                                                } catch (Exception e) {
+                                                    Toast.makeText(getApplicationContext(), "Fallo al crear la tabla " + array_nombres[i], Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
                                             Intent intent = new Intent(getApplicationContext(), MenuPrincipal.class);
 
                                             startActivity(intent);
@@ -192,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             finish();
                                         }
                                         else{
-                                            Toast.makeText(getApplicationContext(), "Ha fallado la inserción del token en la BBDD SQLite", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getApplicationContext(), "Ha fallado la inserción del token en la BBDD SQLite y la creación de tablas", Toast.LENGTH_LONG).show();
                                         }
 
                                     }else{Toast.makeText(getApplicationContext(),"El registro del token en el portal web ha fallado",Toast.LENGTH_LONG).show();}
@@ -208,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(),error.getMessage()+"mensajote",Toast.LENGTH_LONG).show();
                             }
                         }
                 ){
