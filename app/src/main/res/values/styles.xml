@@ -8,4 +8,33 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name = "botones">
+        <item name ="android:layout_width">@dimen/largo</item>
+        <item name ="android:layout_height">@dimen/largo</item>
+        <item name = "android:scaleType">fitCenter</item>
+    </style>
+
+    <style name = "boton">
+        <item name = "android:layout_width">wrap_content</item>
+        <item name = "android:minWidth">@dimen/ancho_min_boton</item>
+        <item name = "android:layout_height">wrap_content</item>
+        <item name = "android:minHeight">@dimen/alto_min_boton</item>
+        <item name ="android:layout_margin">@dimen/margin_boton</item>
+        <item name = "android:textSize">@dimen/texto_boton</item>
+        <item name = "android:background">@drawable/botones</item>
+        <item name = "android:onClick">aJugar</item>
+    </style>
+
+    <style name = "espacio">
+        <item name = "android:layout_width">600dp</item>
+        <item name = "android:layout_height">600dp</item>
+    </style>
+
+    <style name= "radio">
+        <item name ="android:layout_width">wrap_content</item>
+        <item name = "android:layout_height">wrap_content</item>
+        <item name ="android:textSize">@dimen/texto_radio</item>
+        <item name = "android:alpha">0.8</item>
+    </style>
+
 </resources>

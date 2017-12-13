@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 startActivity(intent); //pasamos al menú de gestión de mensajes
 
+                db.close();
+
                 finish(); //finalizamos MainActivity
             }
 
@@ -190,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             //creamos las tablas necesarias, una para cada hijo
 
                                             String nombres_hijos = obj.getString("nombres_hijos");
+                                            nombres_hijos = nombres_hijos.replace(" ","_"); //para nombres compuestos, ya que los nombres de las tablas no aceptan espacios en blanco
 
                                             Toast.makeText(getApplicationContext(), "nombres_hijos: " +
                                                     nombres_hijos, Toast.LENGTH_LONG).show();
@@ -207,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                 if (aux.equals(",")) {
                                                     count++;
                                                 }
+
                                             }
                                             count+=1;
 
@@ -217,7 +221,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             while(!nombres_hijos.equals("")){
 
                                                 Toast.makeText(getApplicationContext(),"dentro del while",Toast.LENGTH_LONG).show();
-                                                // Toast.makeText(getApplicationContext(),"hola!!!",Toast.LENGTH_SHORT).show();
+
+                                                // true si sólo un hijo
+
                                                 if(nombres_hijos.indexOf(",")==-1){
                                                     array_nombres[i1] = nombres_hijos;
                                                     nombres_hijos="";
@@ -240,11 +246,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             for(int i = 0;i<array_nombres.length;i++){
 
                                                 String CREA_TABLA_HIJO =
-                                                        "CREATE TABLE " + array_nombres[i]+ " (" +
+                                                        "CREATE TABLE hijo_" + array_nombres[i]+ " (" +
                                                                  "id INTEGER PRIMARY KEY," +
+                                                                 "autor TEXT," +
+                                                                 "fecha TEXT," +
+                                                                 "titulo TEXT," +
                                                                  "mensaje TEXT," +
-                                                                 "fecha TEXT,"+"" +
-                                                                 "profesor TEXT)";
+                                                                 "categoria TEXT)";
 
 
                                                 try {
@@ -255,6 +263,108 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
 
+                                            //creamos tablas para los mensajes destinados a un curso completo
+
+                                            String cursos_hijos = obj.getString("cursos_hijos");
+                                            cursos_hijos = cursos_hijos.replace(" ","_"); // para evitar espacios en blanco en el nombre de la tabla
+
+                                            int count2 = 0;
+
+                                            String aux2 = "";
+
+
+                                            for (int  i=0; i < cursos_hijos.length(); i++) {
+
+                                                aux2 = cursos_hijos.substring(i, i + 1);
+
+                                                if (aux2.equals(",")) {
+                                                    count2++;
+                                                }
+                                            }
+                                            count2+=1;
+
+                                            String [] array_cursos = new String[count2];
+                                            int i2 =0;
+
+                                            while(!cursos_hijos.equals("")){
+
+                                                //true si sólo un  curso
+
+                                                if(cursos_hijos.indexOf(",")==-1){
+                                                    array_cursos[i2] = cursos_hijos;
+                                                    cursos_hijos="";
+                                                    Toast.makeText(getApplicationContext(),"array_cursos["+i2+"] = "+array_cursos[i2],Toast.LENGTH_SHORT).show();
+                                                }
+                                                else{
+                                                    String curso_aux = cursos_hijos.substring(0,cursos_hijos.indexOf(","));
+
+                                                    Toast.makeText(getApplicationContext(),"curso_aux = "+curso_aux,Toast.LENGTH_SHORT).show();
+
+                                                    array_cursos[i2] = curso_aux;
+
+                                                    cursos_hijos = cursos_hijos.substring(cursos_hijos.indexOf(",")+1,cursos_hijos.length());
+
+                                                    Toast.makeText(getApplicationContext(),"array_cursos["+i2+"] = "+array_cursos[i2],Toast.LENGTH_LONG).show();
+
+                                                    i2++;
+                                                }
+                                            }//end while
+
+                                            for(int i = 0;i<array_cursos.length;i++){
+
+                                                String CREA_TABLA_CURSOS =
+                                                        "CREATE TABLE curso-" + array_cursos[i]+ "- (" +
+                                                                "id INTEGER PRIMARY KEY," +
+                                                                "autor TEXT," +
+                                                                "fecha TEXT," +
+                                                                "titulo TEXT," +
+                                                                "mensaje TEXT," +
+                                                                "categoria TEXT)";
+
+
+                                                try {
+                                                    db.execSQL(CREA_TABLA_CURSOS);
+
+                                                } catch (Exception e) {
+                                                    Toast.makeText(getApplicationContext(), "Fallo al crear la tabla " + array_cursos[i], Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
+                                            //creamos tabla para avisos generales del centro
+
+                                            String CREA_TABLA_GENERAL =
+                                                    "CREATE TABLE general (" +
+                                                            "id INTEGER PRIMARY KEY," +
+                                                            "autor TEXT," +
+                                                            "fecha TEXT," +
+                                                            "titulo TEXT,"+
+                                                            "mensaje TEXT," +
+                                                            "categoria TEXT)";
+
+
+                                            try {
+                                                db.execSQL(CREA_TABLA_GENERAL);
+
+                                            } catch (Exception e) {
+                                                Toast.makeText(getApplicationContext(), "Fallo al crear la tabla general" , Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            //creamos la tabla categorias
+                                            String CREA_TABLA_CATEGORIAS =
+                                                    "CREATE TABLE categorias (" +
+                                                            "id INTEGER PRIMARY KEY," +
+                                                            "nombre TEXT)";
+
+
+                                            try {
+                                                db.execSQL(CREA_TABLA_GENERAL);
+
+                                            } catch (Exception e) {
+                                                Toast.makeText(getApplicationContext(), "Fallo al crear la tabla general" , Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            db.close();
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                             Intent intent = new Intent(getApplicationContext(), MenuPrincipal.class);
 
                                             startActivity(intent);
