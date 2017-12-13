@@ -40,6 +40,14 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
 
 
         String destinatario = data.get("destinatario");
+        destinatario = "'"+destinatario+"'";
+
+        //Toast.makeText(this,"DESTINATARIO = "+destinatario,Toast.LENGTH_LONG).show();
+
+        //debido al nombre de las tablas
+        //if(destinatario.startsWith("")){}
+
+
         String autor = data.get("autor");
         String fecha = data.get("fecha");
         String titulo = remoteMessage.getNotification().getTitle();

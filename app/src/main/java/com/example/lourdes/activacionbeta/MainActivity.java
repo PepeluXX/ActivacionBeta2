@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             for(int i = 0;i<array_nombres.length;i++){
 
                                                 String CREA_TABLA_HIJO =
-                                                        "CREATE TABLE hijo_" + array_nombres[i]+ " (" +
+                                                        "CREATE TABLE 'hijo-" + array_nombres[i]+ "!' (" +
                                                                  "id INTEGER PRIMARY KEY," +
                                                                  "autor TEXT," +
                                                                  "fecha TEXT," +
@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             for(int i = 0;i<array_cursos.length;i++){
 
                                                 String CREA_TABLA_CURSOS =
-                                                        "CREATE TABLE curso-" + array_cursos[i]+ "- (" +
+                                                        "CREATE TABLE 'curso-" + array_cursos[i]+ "!' (" +
                                                                 "id INTEGER PRIMARY KEY," +
                                                                 "autor TEXT," +
                                                                 "fecha TEXT," +
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                                             try {
-                                                db.execSQL(CREA_TABLA_GENERAL);
+                                                db.execSQL(CREA_TABLA_CATEGORIAS);
 
                                             } catch (Exception e) {
                                                 Toast.makeText(getApplicationContext(), "Fallo al crear la tabla general" , Toast.LENGTH_SHORT).show();
