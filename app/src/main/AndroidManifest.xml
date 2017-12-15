@@ -30,7 +30,9 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".MenuPrincipal"></activity>
+        <activity android:name=".MenuPrincipal" />
+        <activity android:name=".ListaMensajes" />
+        <activity android:name=".MuestraMensaje"></activity>
     </application>
 
 </manifest>

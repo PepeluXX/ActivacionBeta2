@@ -252,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                                  "fecha TEXT," +
                                                                  "titulo TEXT," +
                                                                  "mensaje TEXT," +
+                                                                 "leido INTEGER," +
                                                                  "categoria TEXT)";
 
 
@@ -319,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                                 "fecha TEXT," +
                                                                 "titulo TEXT," +
                                                                 "mensaje TEXT," +
+                                                                "leido INTEGER," +
                                                                 "categoria TEXT)";
 
 
@@ -339,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                             "fecha TEXT," +
                                                             "titulo TEXT,"+
                                                             "mensaje TEXT," +
+                                                            "leido INTEGER," +
                                                             "categoria TEXT)";
 
 

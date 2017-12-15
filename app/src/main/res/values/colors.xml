@@ -3,4 +3,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorTextoTitulo">#868E86</color>
+    <color name="colorTextoTituloNoLeido">#121312</color>
+    <color name="backGroundListaMensajes">#6EF274</color>
+    <color name="colorBordeLayoutListaMensajes">#A4C739</color>
+    <color name="colorBordeSeparacion">#A4C739</color>
+
 </resources>

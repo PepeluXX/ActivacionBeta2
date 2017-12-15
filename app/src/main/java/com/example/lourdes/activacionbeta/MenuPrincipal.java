@@ -1,10 +1,12 @@
 package com.example.lourdes.activacionbeta;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
@@ -37,8 +39,6 @@ public class MenuPrincipal extends AppCompatActivity {
         //por_categorias = getCategorias();
 
 
-
-
         Exp_list = (ExpandableListView)findViewById(R.id.exp_list);
         filtros_principales.put("Ver todos",ver_todos);
         filtros_principales.put("Por Hijo",por_hijo);
@@ -46,6 +46,49 @@ public class MenuPrincipal extends AppCompatActivity {
         subfiltros = new ArrayList<String>(filtros_principales.keySet());
         adapter = new AdaptadorFiltrosPrincipalesVE(this,filtros_principales,subfiltros);
         Exp_list.setAdapter(adapter);
+
+
+
+        Exp_list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
+
+               /* Toast.makeText(getBaseContext(),filtros_principales.get(subfiltros.get(groupPosition)).get(childPosition)+" from category"+
+                        subfiltros.get(groupPosition)+" is selected",Toast.LENGTH_LONG).show();*/
+
+                Intent intent = new Intent(getApplicationContext(),ListaMensajes.class);
+
+                String filtro=subfiltros.get(groupPosition);
+
+                Toast.makeText(getBaseContext(),"FILTRO ="+filtro,Toast.LENGTH_LONG).show();
+
+                String nombre_tabla="";
+
+                if(filtro.equals("Por Hijo")){
+
+                     nombre_tabla = filtros_principales.get(subfiltros.get(groupPosition)).get(childPosition).replace(" ","_");
+                     nombre_tabla = "'hijo-"+nombre_tabla+"!'";
+                    intent.putExtra("nombre_tabla",nombre_tabla);
+                    startActivity(intent);
+                }
+                else if(filtro.equals("Por Curso")){
+
+                    nombre_tabla = filtros_principales.get(subfiltros.get(groupPosition)).get(childPosition).replace(" ","_");
+                    nombre_tabla = "'curso-"+nombre_tabla+"!'";
+                    intent.putExtra("nombre_tabla",nombre_tabla);
+                    startActivity(intent);
+                }
+                else{
+                    nombre_tabla = subfiltros.get(groupPosition);
+                    intent.putExtra("nombre_tabla",nombre_tabla);
+                    startActivity(intent);
+                }
+
+
+
+                return false;
+            }
+        });
 
         
     }

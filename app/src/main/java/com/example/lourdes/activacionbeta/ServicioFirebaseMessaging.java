@@ -33,7 +33,7 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
-        notifyUser(remoteMessage.getFrom(),remoteMessage.getNotification().getBody());
+
 
         Map<String,String> data = remoteMessage.getData();
 
@@ -52,6 +52,7 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
         String fecha = data.get("fecha");
         String titulo = remoteMessage.getNotification().getTitle();
         String mensaje = remoteMessage.getNotification().getBody();
+        int leido = 0;
 
 
 
@@ -65,13 +66,14 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
         values.put("fecha", fecha);
         values.put("titulo",titulo);
         values.put("mensaje",mensaje);
+        values.put("leido",leido);
 
 
 // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(destinatario, null, values);
 
         if(newRowId != -1){
-            Log.d("MISVALORES",destinatario+" "+autor+" "+fecha+ " "+titulo+" "+mensaje);
+            Log.d("MISVALORES",destinatario+" "+autor+" "+fecha+ " "+titulo+" "+mensaje+" "+leido);
         }
 
 
@@ -80,6 +82,7 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
 
         //Toast.makeText(getApplicationContext(),"Destinatario = "+destinatario,Toast.LENGTH_SHORT).show();
 
+        notifyUser(remoteMessage.getFrom(),remoteMessage.getNotification().getBody());
     }
 
     public void notifyUser(String from, String notification){
