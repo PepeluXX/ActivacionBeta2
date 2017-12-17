@@ -52,13 +52,13 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
 
         String autor = data.get("autor");
         String fecha = data.get("fecha");
-        String titulo = remoteMessage.getNotification().getTitle();
-        String mensaje = remoteMessage.getNotification().getBody();
+        String titulo = data.get("titulo")/*remoteMessage.getNotification().getTitle()*/;
+        String mensaje = data.get("texto")/*remoteMessage.getNotification().getBody()*/;
         int leido = 0;
 
 
 
-        final BDDHelper mDbHelper = new BDDHelper(this);
+        final BDDHelper mDbHelper = new BDDHelper(getApplicationContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
@@ -84,7 +84,7 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
 
         //Toast.makeText(getApplicationContext(),"Destinatario = "+destinatario,Toast.LENGTH_SHORT).show();
 
-        notifyUser(remoteMessage.getFrom(),remoteMessage.getNotification().getBody());
+        notifyUser(titulo/*remoteMessage.getFrom()*/,mensaje/*remoteMessage.getNotification().getBody()*/);
     }
 
     public void notifyUser(String from, String notification){
