@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,9 +80,11 @@ public class MenuPrincipal extends AppCompatActivity {
                     startActivity(intent);
                 }
                 else{
-                    nombre_tabla = subfiltros.get(groupPosition);
+                   /* nombre_tabla = subfiltros.get(groupPosition);
                     intent.putExtra("nombre_tabla",nombre_tabla);
-                    startActivity(intent);
+                    startActivity(intent);*/
+
+                   getMensajeFromTodos(childPosition);
                 }
 
 
@@ -94,6 +97,107 @@ public class MenuPrincipal extends AppCompatActivity {
     }
 
 
+    public void getMensajeFromTodos(int childPosition){
+
+        ArrayList<String> nombres_tablas = getNombresTablas();
+
+       /* for (int i = 0; i<nombres_tablas.size();i++){
+
+            Toast.makeText(this,"nombre_tablas["+i+"]"+nombres_tablas.get(i),Toast.LENGTH_SHORT).show();
+        }*/
+
+        HashMap<String,ArrayList<Integer>> cajon = new HashMap<>();
+
+        BDDHelper miHelper = new BDDHelper(this);
+
+        SQLiteDatabase bd = miHelper.getReadableDatabase();
+
+        Cursor cursor;
+
+        int contador = 0;
+
+        ArrayList<String> tabla_con_datos_array_aux = new ArrayList<>();
+        ArrayList<Integer> ids = new ArrayList<>();
+
+
+        for(int i=0; i < nombres_tablas.size();i++){
+            String tabla_con_datos = "";
+            ArrayList<Integer> lista_contador = new ArrayList<>();
+            String RAW_QUERY = "SELECT id FROM '"+nombres_tablas.get(i)+"'";
+            cursor=bd.rawQuery(RAW_QUERY,null);
+            cursor.moveToFirst();
+            if(cursor.getCount()!= 0){
+                tabla_con_datos = nombres_tablas.get(i);
+               // Toast.makeText(this,"tabla con datos = "+tabla_con_datos,Toast.LENGTH_SHORT).show();
+                for(int j=0;j<cursor.getCount();j++){
+                    //Toast.makeText(this,"contador = "+contador,Toast.LENGTH_SHORT).show();
+                    lista_contador.add(contador);
+                    contador++;
+                    ids.add(cursor.getInt(0));
+                   // Toast.makeText(this,"ids = "+cursor.getInt(j),Toast.LENGTH_SHORT).show();
+                    cursor.moveToNext();
+                }
+
+                cajon.put(tabla_con_datos,lista_contador);
+                tabla_con_datos_array_aux.add(tabla_con_datos);
+            }
+        }
+
+        //Ahora busco en que tabla está el mensaje, y con contador encuentro la id
+
+
+        ArrayList <Integer> contador_aux = new ArrayList<>();
+        String nombre_tabla_final ="";
+
+        for(int i= 0;i<cajon.size();i++){
+
+           contador_aux=cajon.get(tabla_con_datos_array_aux.get(i));
+
+           for(int j=0; j < contador_aux.size();j++){
+
+               if(contador_aux.get(j) == childPosition){
+
+                   Log.d("CONTADORCHILD",contador_aux.get(j)+ " "+childPosition+" "+ids.size());
+                   nombre_tabla_final = tabla_con_datos_array_aux.get(i);
+
+                   break;
+               }
+           }
+           //break?
+
+        }
+
+        for (int d = 0;d<ids.size();d++){
+            Log.d("IDS ",""+ids.get(d));
+        }
+
+
+        int id_mensaje = ids.get(childPosition);
+
+        Toast.makeText(this,"id_mensaje = "+id_mensaje+ " child position = "+childPosition,Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this,MuestraMensaje.class);
+
+        intent.putExtra("nombre_tabla","'"+nombre_tabla_final+"'");
+        intent.putExtra("id_mensaje",id_mensaje);
+
+        Toast.makeText(this,"nombre tabla final = "+nombre_tabla_final,Toast.LENGTH_SHORT).show();
+        Log.d("NOMBRETABLAFINAL",nombre_tabla_final);
+        String query = "select titulo from '"+nombre_tabla_final+"' where id="+id_mensaje;
+        Cursor otro_cursor = bd.rawQuery(query,null);
+
+        otro_cursor.moveToFirst();
+        String titulo = otro_cursor.getString(0);
+        intent.putExtra("titulo",titulo);
+        bd.close();
+        startActivity(intent);
+        //finish();
+
+
+
+
+
+    }
     public ArrayList<String>getNombreCursos(){
 
         ArrayList<String> nombres_tablas = getNombresTablas();
@@ -154,7 +258,9 @@ public class MenuPrincipal extends AppCompatActivity {
 
         for (int i = 0; i<nombres_tablas.size();i++) {
 
-            String RAW_QUERY = "SELECT titulo FROM '"+nombres_tablas.get(i)+"' ORDER BY fecha DESC";
+            String RAW_QUERY = "SELECT id,titulo FROM '"+nombres_tablas.get(i)+"'";
+
+            String id_titulo="";
 
             Cursor cursor = db.rawQuery(RAW_QUERY, null);
 
@@ -164,7 +270,8 @@ public class MenuPrincipal extends AppCompatActivity {
                 //Toast.makeText(this,"cursor.getString(0) = "+cursor.getString(0),Toast.LENGTH_LONG).show();
                 Log.d("MIFALLO", cursor.getString(0));
 
-                titulos_mensajes.add(cursor.getString(0));
+                id_titulo = String.valueOf(cursor.getInt(0))+"."+cursor.getString(1);
+                titulos_mensajes.add(id_titulo);
 
                 cursor.moveToNext();
             }
@@ -202,6 +309,8 @@ public class MenuPrincipal extends AppCompatActivity {
 
             cursor.moveToNext();
         }
+
+        //descarto las tablas que no quiero incluir en los resultados
 
         for (int i=0;i<nombres_tablas_aux.size();i++){
 
