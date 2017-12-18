@@ -16,6 +16,7 @@ public class SharedPrefManager {
     private static SharedPrefManager mInstance;
     private static final String SHARED_PREF_NAME="mi_caja_de_datos";
     private static final String KEY_TOKEN = "token";
+    private static boolean no_leido_en_hijos =false;
 
 
 

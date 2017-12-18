@@ -35,6 +35,8 @@ public class MuestraMensaje extends AppCompatActivity {
         String RAW_QUERY = "SELECT autor,fecha,titulo,mensaje,id FROM "+datos.getString("nombre_tabla")+
                 " WHERE titulo = '"+datos.getString("titulo")+"' AND id = "+datos.getInt("id_mensaje");
 
+        Log.d("VALORES_INTENT",datos.getString("nombre_tabla")+" "+datos.getString("titulo")+" "+datos.getInt("id_mensaje"));
+
         SQLiteDatabase db = miHelper.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(RAW_QUERY,null);

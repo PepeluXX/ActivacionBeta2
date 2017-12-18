@@ -5,6 +5,7 @@
     <dimen name = "largo">60dp</dimen>
     <dimen name = "maximo">300dp</dimen>
     <dimen name = "texto">12sp</dimen>
+    <dimen name = "texto_child">15sp</dimen>
     <dimen name = "padding_pantalla">12dp</dimen>
     <dimen name = "casilla">90dp</dimen>
     <dimen name = "texto_titulo">24sp</dimen>

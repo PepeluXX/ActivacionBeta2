@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class MenuPrincipal extends AppCompatActivity {
@@ -24,10 +25,11 @@ public class MenuPrincipal extends AppCompatActivity {
 
     public BDDHelper mDbHelper = new BDDHelper(this);
 
-    HashMap<String, List<String>> filtros_principales = new HashMap<String, List<String>>();
+    HashMap<String, List<String>> filtros_principales = new LinkedHashMap<String, List<String>>();
     ArrayList<String> ver_todos = new ArrayList<String>();
     ArrayList<String> por_hijo = new ArrayList<String>();
     ArrayList<String> por_curso = new ArrayList<String>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +39,16 @@ public class MenuPrincipal extends AppCompatActivity {
         ver_todos = getTitulosTodos();
         por_hijo = getNombreHijos();
         por_curso = getNombreCursos();
+
         //por_categorias = getCategorias();
 
 
         Exp_list = (ExpandableListView)findViewById(R.id.exp_list);
-        filtros_principales.put("Ver todos",ver_todos);
+
         filtros_principales.put("Por Hijo",por_hijo);
         filtros_principales.put("Por Curso",por_curso);
+        filtros_principales.put("Ver todos",ver_todos);
+
         subfiltros = new ArrayList<String>(filtros_principales.keySet());
         adapter = new AdaptadorFiltrosPrincipalesVE(this,filtros_principales,subfiltros);
         Exp_list.setAdapter(adapter);
@@ -279,7 +284,7 @@ public class MenuPrincipal extends AppCompatActivity {
         db.close();
         return titulos_mensajes;
 
-    }
+}
 
 
     public ArrayList<String> getNombresTablas(){
