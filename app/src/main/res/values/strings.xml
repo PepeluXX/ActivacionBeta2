@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ActivacionBeta</string>
+    <string name="instrucciones_categorias">
+        Cree una categoría, por ejemplo \"Importantes\" o \"Sobre reuniones\", si desea clasificar la información.
+        Se pueden crear y eliminar las categorías que se deseen, los mensajes pertenecientes a una categoría
+        no se eliminarán.
+    </string>
 </resources>

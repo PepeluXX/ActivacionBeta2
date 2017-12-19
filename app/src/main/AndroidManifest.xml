@@ -32,7 +32,11 @@
 
         <activity android:name=".MenuPrincipal" />
         <activity android:name=".ListaMensajes" />
-        <activity android:name=".MuestraMensaje"></activity>
+        <activity android:name=".MuestraMensaje" />
+        <activity android:name=".CrearCategorias" />
+        <activity android:name=".BorrarCategorias" />
+        <activity android:name=".ConfirmarBorradoCategoria"
+             android:theme="@android:style/Theme.Dialog" ></activity>
     </application>
 
 </manifest>

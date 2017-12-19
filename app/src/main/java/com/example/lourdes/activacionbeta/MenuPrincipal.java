@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.lang.reflect.Array;
@@ -29,6 +31,7 @@ public class MenuPrincipal extends AppCompatActivity {
     ArrayList<String> ver_todos = new ArrayList<String>();
     ArrayList<String> por_hijo = new ArrayList<String>();
     ArrayList<String> por_curso = new ArrayList<String>();
+    ArrayList<String>por_categorias = new ArrayList<>();
 
 
     @Override
@@ -36,11 +39,11 @@ public class MenuPrincipal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_principal);
 
+        final LinearLayout lm = (LinearLayout) findViewById(R.id.linearLayout2);
         ver_todos = getTitulosTodos();
         por_hijo = getNombreHijos();
         por_curso = getNombreCursos();
-
-        //por_categorias = getCategorias();
+        por_categorias = getCategorias();
 
 
         Exp_list = (ExpandableListView)findViewById(R.id.exp_list);
@@ -48,6 +51,8 @@ public class MenuPrincipal extends AppCompatActivity {
         filtros_principales.put("Por Hijo",por_hijo);
         filtros_principales.put("Por Curso",por_curso);
         filtros_principales.put("Ver todos",ver_todos);
+        filtros_principales.put("Por Categoría",por_categorias);
+
 
         subfiltros = new ArrayList<String>(filtros_principales.keySet());
         adapter = new AdaptadorFiltrosPrincipalesVE(this,filtros_principales,subfiltros);
@@ -84,6 +89,11 @@ public class MenuPrincipal extends AppCompatActivity {
                     intent.putExtra("nombre_tabla",nombre_tabla);
                     startActivity(intent);
                 }
+                else if(filtro.equals("Por Categoría")){
+                    Toast.makeText(getBaseContext(),"childPosition = "+childPosition,Toast.LENGTH_SHORT).show();
+
+
+                }
                 else{
                    /* nombre_tabla = subfiltros.get(groupPosition);
                     intent.putExtra("nombre_tabla",nombre_tabla);
@@ -98,6 +108,23 @@ public class MenuPrincipal extends AppCompatActivity {
             }
         });
 
+      /* final Button borra = new Button(this);
+        borra.setText("Borrar categorías seleccionadas");
+        //borra.setId;
+
+        lm.addView(borra);*/
+
+        Button boton_crear_categorias =(Button)findViewById(R.id.boton_crear_categorias);
+
+        boton_crear_categorias.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent2 = new Intent(getApplicationContext(),CrearCategorias.class);
+                startActivity(intent2);
+
+            }
+        });
         
     }
 
@@ -285,6 +312,26 @@ public class MenuPrincipal extends AppCompatActivity {
         return titulos_mensajes;
 
 }
+
+    public ArrayList<String> getCategorias(){
+
+        ArrayList<String>categorias = new ArrayList<>();
+       // categorias.add("Crear categoría");
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+
+        String RAW_QUERY = "SELECT nombre FROM categorias";
+        Cursor cursor = db.rawQuery(RAW_QUERY,null);
+        cursor.moveToFirst();
+
+        for(int i=0; i<cursor.getCount();i++){
+            categorias.add(cursor.getString(0));
+            cursor.moveToNext();
+        }
+        return categorias;
+    }
+
 
 
     public ArrayList<String> getNombresTablas(){
