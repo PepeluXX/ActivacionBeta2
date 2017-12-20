@@ -35,7 +35,8 @@ public class MyNotificationManager {
                 .setContentIntent(pendingIntent)
                 .setContentTitle(from)
                 .setContentText(notification)
-                .setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(),R.mipmap.ic_launcher))
+                .setSmallIcon(R.drawable.ic_face)
+                .setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(),R.drawable.ic_face))
                 .build();
 
         mNotification.flags |= Notification.FLAG_AUTO_CANCEL;

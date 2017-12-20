@@ -1,11 +1,13 @@
 package com.example.lourdes.activacionbeta;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ public class BorrarCategorias extends AppCompatActivity {
 
     private final BDDHelper miHelper = new BDDHelper(this);
     //private Button borra ;
+    int marka = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

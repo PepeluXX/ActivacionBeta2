@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ public class MuestraMensaje extends AppCompatActivity {
     final BDDHelper miHelper = new BDDHelper(this);
 
     TextView texto_autor,texto_fecha,texto_titulo,texto_mensaje;
+    ImageButton boton_borrar_mensaje,boton_guardar_mensaje;
 
     int id;
 
@@ -30,6 +33,9 @@ public class MuestraMensaje extends AppCompatActivity {
         texto_titulo = (TextView)findViewById(R.id.texto_titulo);
         texto_mensaje = (TextView)findViewById(R.id.texto_mensaje);
 
+        boton_borrar_mensaje = (ImageButton)findViewById(R.id.boton_borrar_mensaje);
+        boton_guardar_mensaje = (ImageButton)findViewById(R.id.boton_guardar_mensaje);
+
         datos = getIntent().getExtras();
 
         String RAW_QUERY = "SELECT autor,fecha,titulo,mensaje,id FROM "+datos.getString("nombre_tabla")+
@@ -43,10 +49,10 @@ public class MuestraMensaje extends AppCompatActivity {
         cursor.moveToFirst();
 
         for(int i=0;i<cursor.getCount();i++){
-            texto_autor.setText(cursor.getString(0));
-            texto_fecha.setText(cursor.getString(1));
-            texto_titulo.setText(cursor.getString(2));
-            texto_mensaje.setText(cursor.getString(3));
+            texto_autor.setText("Enviado por: "+cursor.getString(0));
+            texto_fecha.setText("Recibido el: " +cursor.getString(1));
+            texto_titulo.setText("Asunto:\n"+cursor.getString(2));
+            texto_mensaje.setText("Mensaje:\n"+cursor.getString(3));
             id=cursor.getInt(4);
             cursor.moveToNext();
         }
@@ -74,6 +80,40 @@ public class MuestraMensaje extends AppCompatActivity {
 
         db2.close();
         //miHelper.close();
+
+
+        //añadimos listener a los botones
+
+
+
+        boton_borrar_mensaje.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getApplicationContext(),ConfirmarBorradoMensaje.class);
+                intent.putExtra("id_mensaje",id);
+                intent.putExtra("nombre_tabla",datos.getString("nombre_tabla"));
+                intent.putExtra("titulo",datos.getString("titulo"));
+
+                startActivity(intent);
+                finish();
+
+            }
+        });
+
+
+        boton_guardar_mensaje.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getApplicationContext(),GuardarEnCategoria.class);
+                intent.putExtra("nombre_tabla",datos.getString("nombre_tabla"));
+                intent.putExtra("id",String.valueOf(id));
+                startActivity(intent);
+                //finish();
+
+            }
+        });
     }
 
     @Override

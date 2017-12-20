@@ -90,7 +90,11 @@ public class MenuPrincipal extends AppCompatActivity {
                     startActivity(intent);
                 }
                 else if(filtro.equals("Por Categoría")){
-                    Toast.makeText(getBaseContext(),"childPosition = "+childPosition,Toast.LENGTH_SHORT).show();
+                    Intent intent1 = new Intent(getApplicationContext(),MuestraMensajeCategorias.class);
+                    intent1.putExtra("childPosition",String.valueOf(childPosition));
+                    startActivity(intent1);
+
+
 
 
                 }
@@ -122,6 +126,7 @@ public class MenuPrincipal extends AppCompatActivity {
 
                 Intent intent2 = new Intent(getApplicationContext(),CrearCategorias.class);
                 startActivity(intent2);
+
 
             }
         });

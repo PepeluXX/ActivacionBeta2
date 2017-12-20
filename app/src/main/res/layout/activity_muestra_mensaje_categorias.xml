@@ -4,16 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lourdes.activacionbeta.ListaMensajes"
-    android:id="@+id/scrollView"
-    android:background="@color/fondo">
+    tools:context="com.example.lourdes.activacionbeta.MuestraMensajeCategorias"
+    android:id="@+id/scrollView">
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/fondo"></LinearLayout>
+        android:orientation="vertical"></LinearLayout>
 
 
 

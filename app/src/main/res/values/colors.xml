@@ -3,10 +3,14 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorTextoTitulo">#868E86</color>
+    <color name="colorTextoTitulo">#676967</color>
     <color name="colorTextoTituloNoLeido">#121312</color>
     <color name="backGroundListaMensajes">#6EF274</color>
-    <color name="colorBordeLayoutListaMensajes">#A4C739</color>
+    <color name="colorBordeLayoutListaMensajes">#bfe841</color>
+    <color name="fondo">#c7ccbe</color>
+    <color name="colorBordeChilds">#c1c4b8</color>
     <color name="colorBordeSeparacion">#A4C739</color>
+    <color name="colorBotonNormal">#D4D5D4</color>
+    <color name="color_editText_main_activity">#cce4c4</color>
 
 </resources>

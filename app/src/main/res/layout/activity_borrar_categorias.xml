@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.lourdes.activacionbeta.BorrarCategorias"
-    android:id="@+id/linearLayouttt">
+    android:id="@+id/linearLayouttt"
+    android:background="@color/fondo">
 
     <ScrollView
         android:layout_width="match_parent"

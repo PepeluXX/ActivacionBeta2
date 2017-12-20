@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +36,7 @@ public class ListaMensajes extends AppCompatActivity {
 
         final LinearLayout lm = (LinearLayout) findViewById(R.id.linearLayout);
 
+        lm.setBackgroundColor(ContextCompat.getColor(this,R.color.fondo));
         // create the layout params that will be used to define how your
         // button will be displayed
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -64,7 +66,7 @@ public class ListaMensajes extends AppCompatActivity {
             // Create LinearLayout
             LinearLayout ll = new LinearLayout(this);
             ll.setOrientation(LinearLayout.HORIZONTAL);
-            ll.setBackgroundColor(12);
+            ll.setBackgroundColor(ContextCompat.getColor(this,R.color.fondo));
 
             GradientDrawable border = new GradientDrawable();
             border.setColor(ContextCompat.getColor(this,R.color.colorBordeLayoutListaMensajes)); //white background
@@ -87,6 +89,7 @@ public class ListaMensajes extends AppCompatActivity {
 
             if(cursor.getInt(1)==0){
                 titulo.setTextColor(ContextCompat.getColor(this, R.color.colorTextoTituloNoLeido));
+                titulo.setTypeface(null, Typeface.BOLD);
                // Toast.makeText(this,"no leido = "+cursor.getInt(1),Toast.LENGTH_LONG).show();
 
             }
@@ -94,6 +97,7 @@ public class ListaMensajes extends AppCompatActivity {
                 titulo.setTextColor(ContextCompat.getColor(this, R.color.colorTextoTitulo));
                 //Toast.makeText(this,"leido = "+cursor.getInt(1),Toast.LENGTH_LONG).show();
             }
+
 
 
             Resources resources = getApplicationContext().getResources();

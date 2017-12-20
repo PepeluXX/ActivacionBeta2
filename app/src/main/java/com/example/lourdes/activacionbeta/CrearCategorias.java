@@ -123,6 +123,16 @@ public class CrearCategorias extends AppCompatActivity  {
         });
 
     }
+
+    public void onBackPressed() {
+        Intent intent = new Intent(this,MenuPrincipal.class);
+
+        startActivity(intent);
+        finish();
+
+        super.onBackPressed();
+    }
 }
+
 
 
