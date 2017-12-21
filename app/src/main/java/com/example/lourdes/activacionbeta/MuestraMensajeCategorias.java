@@ -265,4 +265,14 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
 
         return nombres_tablas;
     }
+
+
+    public void onBackPressed() {
+        Intent intent = new Intent(this,MenuPrincipal.class);
+        //intent.putExtra("nombre_tabla",datos.getString("nombre_tabla"));
+        startActivity(intent);
+        finish();
+
+        super.onBackPressed();
+    }
 }

@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Array;
@@ -32,6 +34,9 @@ public class MenuPrincipal extends AppCompatActivity {
     ArrayList<String> por_hijo = new ArrayList<String>();
     ArrayList<String> por_curso = new ArrayList<String>();
     ArrayList<String>por_categorias = new ArrayList<>();
+    ArrayList<String>sin_leer = new ArrayList<>();
+
+    ImageView sobre;
 
 
     @Override
@@ -39,18 +44,30 @@ public class MenuPrincipal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_principal);
 
+
         final LinearLayout lm = (LinearLayout) findViewById(R.id.linearLayout2);
-        ver_todos = getTitulosTodos();
+
+        sobre = (ImageView)findViewById(R.id.sobre);
+
+        ArrayList<String>check = new ArrayList<>();
+        check = getTitulosTodos("leido=0");
+
+        if(!check.isEmpty()){
+            sobre.setImageResource(R.drawable.ic_email_enano);
+        }
+
+        ver_todos = getTitulosTodos("leido=1");
         por_hijo = getNombreHijos();
         por_curso = getNombreCursos();
         por_categorias = getCategorias();
+        sin_leer = getTitulosTodos("leido=0");
 
 
         Exp_list = (ExpandableListView)findViewById(R.id.exp_list);
-
+        filtros_principales.put("Sin leer",sin_leer);
         filtros_principales.put("Por Hijo",por_hijo);
         filtros_principales.put("Por Curso",por_curso);
-        filtros_principales.put("Ver todos",ver_todos);
+        filtros_principales.put("Ver todos leídos",ver_todos);
         filtros_principales.put("Por Categoría",por_categorias);
 
 
@@ -81,6 +98,7 @@ public class MenuPrincipal extends AppCompatActivity {
                      nombre_tabla = "'hijo-"+nombre_tabla+"!'";
                     intent.putExtra("nombre_tabla",nombre_tabla);
                     startActivity(intent);
+                    finish();
                 }
                 else if(filtro.equals("Por Curso")){
 
@@ -88,26 +106,24 @@ public class MenuPrincipal extends AppCompatActivity {
                     nombre_tabla = "'curso-"+nombre_tabla+"!'";
                     intent.putExtra("nombre_tabla",nombre_tabla);
                     startActivity(intent);
+                    finish();
                 }
                 else if(filtro.equals("Por Categoría")){
                     Intent intent1 = new Intent(getApplicationContext(),MuestraMensajeCategorias.class);
                     intent1.putExtra("childPosition",String.valueOf(childPosition));
                     startActivity(intent1);
-
-
-
-
+                    finish();
                 }
-                else{
+                else if(filtro.equals("Sin leer")){
+                    getMensajeFromTodos(childPosition,"leido = 0");
+                }
+                else {
                    /* nombre_tabla = subfiltros.get(groupPosition);
                     intent.putExtra("nombre_tabla",nombre_tabla);
                     startActivity(intent);*/
-
-                   getMensajeFromTodos(childPosition);
+                    getMensajeFromTodos(childPosition,"leido = 1");
+                    //finish();
                 }
-
-
-
                 return false;
             }
         });
@@ -134,7 +150,7 @@ public class MenuPrincipal extends AppCompatActivity {
     }
 
 
-    public void getMensajeFromTodos(int childPosition){
+    public void getMensajeFromTodos(int childPosition, String leido_igual_a){
 
         ArrayList<String> nombres_tablas = getNombresTablas();
 
@@ -160,7 +176,7 @@ public class MenuPrincipal extends AppCompatActivity {
         for(int i=0; i < nombres_tablas.size();i++){
             String tabla_con_datos = "";
             ArrayList<Integer> lista_contador = new ArrayList<>();
-            String RAW_QUERY = "SELECT id FROM '"+nombres_tablas.get(i)+"'";
+            String RAW_QUERY = "SELECT id FROM '"+nombres_tablas.get(i)+"' WHERE "+leido_igual_a;
             cursor=bd.rawQuery(RAW_QUERY,null);
             cursor.moveToFirst();
             if(cursor.getCount()!= 0){
@@ -197,7 +213,7 @@ public class MenuPrincipal extends AppCompatActivity {
                    Log.d("CONTADORCHILD",contador_aux.get(j)+ " "+childPosition+" "+ids.size());
                    nombre_tabla_final = tabla_con_datos_array_aux.get(i);
 
-                   break;
+                   //break;
                }
            }
            //break?
@@ -228,13 +244,11 @@ public class MenuPrincipal extends AppCompatActivity {
         intent.putExtra("titulo",titulo);
         bd.close();
         startActivity(intent);
-        //finish();
-
-
-
-
+        finish();
 
     }
+
+
     public ArrayList<String>getNombreCursos(){
 
         ArrayList<String> nombres_tablas = getNombresTablas();
@@ -284,7 +298,7 @@ public class MenuPrincipal extends AppCompatActivity {
 
 
 
-    public ArrayList<String> getTitulosTodos() {
+    public ArrayList<String> getTitulosTodos(String query) {
 
 
         ArrayList<String> nombres_tablas = getNombresTablas();
@@ -295,7 +309,7 @@ public class MenuPrincipal extends AppCompatActivity {
 
         for (int i = 0; i<nombres_tablas.size();i++) {
 
-            String RAW_QUERY = "SELECT id,titulo FROM '"+nombres_tablas.get(i)+"'";
+            String RAW_QUERY = "SELECT id,titulo FROM '"+nombres_tablas.get(i)+"' WHERE "+query;
 
             String id_titulo="";
 

@@ -17,7 +17,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -25,6 +28,7 @@ public class BorrarCategorias extends AppCompatActivity {
 
     private final BDDHelper miHelper = new BDDHelper(this);
     //private Button borra ;
+    private TextView no_categorias;
     int marka = 0;
 
     @Override
@@ -57,6 +61,11 @@ public class BorrarCategorias extends AppCompatActivity {
         final Cursor cursor = db.rawQuery(RAW_QUERY,null);
 
         cursor.moveToFirst();
+
+        if(cursor.getCount()==0){
+            no_categorias = (TextView)findViewById(R.id.texto_no_cat);
+            no_categorias.setText(R.string.no_categorias);
+        }
 
         //Creamos elementos dinámicamente
 

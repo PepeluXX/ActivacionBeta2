@@ -8,6 +8,7 @@
         no se eliminarán.
     </string>
 
+    <string name="no_categorias">No existen categorías para eliminar</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

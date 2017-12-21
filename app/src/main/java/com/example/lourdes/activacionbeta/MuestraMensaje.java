@@ -79,12 +79,13 @@ public class MuestraMensaje extends AppCompatActivity {
                 selectionArgs);
 
         db2.close();
-        //miHelper.close();
+
+
+
+
 
 
         //añadimos listener a los botones
-
-
 
         boton_borrar_mensaje.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -114,6 +114,7 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
         intent.putExtra("nombre_tabla",destinatario);
         intent.putExtra("titulo",titulo);
         intent.putExtra("id_mensaje",id_mensaje);
+        intent.putExtra("desde_notificacion",true);
         myNotificationManager.showNotification(from,notification,intent);
     }
 

@@ -52,7 +52,7 @@ public class ListaMensajes extends AppCompatActivity {
 
         final String nombre_tabla = datos.getString("nombre_tabla");
 
-        String RAW_QUERY = "SELECT titulo,leido,id FROM "+nombre_tabla;
+        String RAW_QUERY = "SELECT titulo,leido,id FROM "+nombre_tabla+ " ORDER BY leido,fecha DESC";
 
         final Cursor cursor = db.rawQuery(RAW_QUERY,null);
 
@@ -133,6 +133,14 @@ public class ListaMensajes extends AppCompatActivity {
             lm.addView(ll);
         }
         db.close();
+    }
+    public void onBackPressed() {
+        Intent intent = new Intent(this,MenuPrincipal.class);
+
+        startActivity(intent);
+        finish();
+
+        super.onBackPressed();
     }
     }
 
