@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
 /**
@@ -16,7 +18,7 @@ public class MyNotificationManager {
 
     private Context ctx;
     public static final int NOTIFICATION_ID = 234;
-
+    Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
     public MyNotificationManager(Context ctx) {
 
         this.ctx = ctx;
@@ -35,6 +37,7 @@ public class MyNotificationManager {
                 .setContentIntent(pendingIntent)
                 .setContentTitle(from)
                 .setContentText(notification)
+                .setSound(uri)
                 .setSmallIcon(R.drawable.ic_face)
                 .setLargeIcon(BitmapFactory.decodeResource(ctx.getResources(),R.drawable.ic_face))
                 .build();
