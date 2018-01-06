@@ -35,6 +35,7 @@ public class MenuPrincipal extends AppCompatActivity {
     ArrayList<String> por_curso = new ArrayList<String>();
     ArrayList<String>por_categorias = new ArrayList<>();
     ArrayList<String>sin_leer = new ArrayList<>();
+    ArrayList<String>generales = new ArrayList<>();
 
     ImageView sobre;
 
@@ -61,12 +62,14 @@ public class MenuPrincipal extends AppCompatActivity {
         por_curso = getNombreCursos();
         por_categorias = getCategorias();
         sin_leer = getTitulosTodos("leido=0");
+        generales = getTitulosGenerales();
 
 
         Exp_list = (ExpandableListView)findViewById(R.id.exp_list);
         filtros_principales.put("Sin leer",sin_leer);
         filtros_principales.put("Por Hijo",por_hijo);
         filtros_principales.put("Por Curso",por_curso);
+        filtros_principales.put("Generales",generales);
         filtros_principales.put("Ver todos leídos",ver_todos);
         filtros_principales.put("Por Categoría",por_categorias);
 
@@ -117,6 +120,13 @@ public class MenuPrincipal extends AppCompatActivity {
                 else if(filtro.equals("Sin leer")){
                     getMensajeFromTodos(childPosition,"leido = 0");
                 }
+                else if(filtro.equals("Generales")){
+                    Intent intento = new Intent(getApplicationContext(),ListaMensajes.class);
+                    intent.putExtra("nombre_tabla","general");
+                    startActivity(intent);
+                    finish();
+
+                }
                 else {
                    /* nombre_tabla = subfiltros.get(groupPosition);
                     intent.putExtra("nombre_tabla",nombre_tabla);
@@ -150,6 +160,24 @@ public class MenuPrincipal extends AppCompatActivity {
     }
 
 
+    public ArrayList<String> getTitulosGenerales (){
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        ArrayList<String> titulos = new ArrayList<>();
+
+        String RAW_QUERY = "SELECT titulo FROM general";
+        Cursor cursor = db.rawQuery(RAW_QUERY,null);
+        cursor.moveToFirst();
+
+        for(int i=0; i<cursor.getCount();i++){
+            titulos.add(cursor.getString(0));
+            cursor.moveToNext();
+        }
+
+        return titulos;
+
+    }
     public void getMensajeFromTodos(int childPosition, String leido_igual_a){
 
         ArrayList<String> nombres_tablas = getNombresTablas();
