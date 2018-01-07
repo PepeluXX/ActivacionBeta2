@@ -51,7 +51,7 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        destinatario = "'"+destinatario+"'";
+
 
         //Toast.makeText(this,"DESTINATARIO = "+destinatario,Toast.LENGTH_LONG).show();
 
@@ -70,6 +70,8 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
         final BDDHelper mDbHelper = new BDDHelper(getApplicationContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
+       compruebaCurso(destinatario);
+
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         //values.put("id",1);
@@ -81,6 +83,9 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
 
 
 // Insert the new row, returning the primary key value of the new row
+
+        destinatario = "'"+destinatario+"'";
+
         long newRowId = db.insert(destinatario, null, values);
 
         if(newRowId != -1){
@@ -116,6 +121,58 @@ public class ServicioFirebaseMessaging extends FirebaseMessagingService {
         intent.putExtra("id_mensaje",id_mensaje);
         intent.putExtra("desde_notificacion",true);
         myNotificationManager.showNotification(from,notification,intent);
+    }
+
+    public boolean compruebaCurso(String destinatario){
+
+        final BDDHelper mDbHelper = new BDDHelper(getApplicationContext());
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        //Comprobamos si la tabla ya existe, si no existe, es que el curso del alumno ha cambiado
+        //(ya que el curso de los alumnos se modifica en el portal) y hay que crear una tabla nueva
+        //para los mensajes destinados a ese curso.
+        String RAW_QUERY = "SELECT name FROM sqlite_master WHERE type='table'";
+        Cursor cursor1 = db.rawQuery(RAW_QUERY,null);
+
+        cursor1.moveToFirst();
+
+        boolean marca = false;
+
+        for(int i= 0 ;i<cursor1.getCount();i++){
+            String name = cursor1.getString(0);
+
+            Log.d("NOMBRESTABLAS",name);
+            if(name.equals(destinatario)){
+                marca=true;
+                return true;
+            }
+            cursor1.moveToNext();
+        }
+
+        if(!marca){
+
+            String CREA_TABLA_CURSOS =
+                    "CREATE TABLE '" + destinatario+ "' (" +
+                            "id INTEGER PRIMARY KEY," +
+                            "autor TEXT," +
+                            "fecha TEXT," +
+                            "titulo TEXT," +
+                            "mensaje TEXT," +
+                            "leido INTEGER," +
+                            "categoria TEXT)";
+
+
+            try {
+                db.execSQL(CREA_TABLA_CURSOS);
+
+
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "Fallo al crear la tabla " + destinatario, Toast.LENGTH_SHORT).show();
+
+            }
+
+        }
+        db.close();
+        return true;
     }
 
 }
