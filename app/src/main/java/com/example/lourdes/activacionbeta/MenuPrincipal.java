@@ -121,10 +121,11 @@ public class MenuPrincipal extends AppCompatActivity {
                     getMensajeFromTodos(childPosition,"leido = 0");
                 }
                 else if(filtro.equals("Generales")){
-                    Intent intento = new Intent(getApplicationContext(),ListaMensajes.class);
-                    intent.putExtra("nombre_tabla","general");
-                    startActivity(intent);
-                    finish();
+                   // Intent intento = new Intent(getApplicationContext(),ListaMensajes.class);
+                   // intent.putExtra("nombre_tabla","general");
+                    //startActivity(intent);
+                   // finish();
+                    getMensajeGeneral(childPosition);
 
                 }
                 else {
@@ -160,13 +161,40 @@ public class MenuPrincipal extends AppCompatActivity {
     }
 
 
+    public void getMensajeGeneral(int childPosition){
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        ArrayList<String> titulos = new ArrayList<>();
+
+        String RAW_QUERY = "SELECT id,titulo FROM general ORDER BY leido,fecha DESC";
+        Cursor cursor = db.rawQuery(RAW_QUERY,null);
+
+
+        cursor.moveToPosition(childPosition);
+
+        int id = cursor.getInt(0);
+        String titulo = cursor.getString(1);
+
+        Intent intent = new Intent(getApplicationContext(),MuestraMensaje.class);
+        intent.putExtra("nombre_tabla","general");
+        intent.putExtra("titulo",titulo);
+        intent.putExtra("id_mensaje",id);
+        startActivity(intent);
+        finish();
+    }
+
+
+
+
+
     public ArrayList<String> getTitulosGenerales (){
 
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         ArrayList<String> titulos = new ArrayList<>();
 
-        String RAW_QUERY = "SELECT titulo FROM general";
+        String RAW_QUERY = "SELECT titulo FROM general ORDER BY leido,fecha DESC";
         Cursor cursor = db.rawQuery(RAW_QUERY,null);
         cursor.moveToFirst();
 
