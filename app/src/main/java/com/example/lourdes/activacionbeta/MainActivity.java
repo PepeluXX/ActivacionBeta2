@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText editTextDNI,editTextPassword;
     private Button botonRegistro;
     private String marka;
-    private static final String URL_REGISTRO_TOKEN= "http://www.portaldedesarrollo.com/ActivacionBeta/v1/TokenRegistration.php";
+    private static final String URL_REGISTRO_TOKEN= "https://www.portaldedesarrollo.com/TokenRegistration.php";
 
     String respuesta_servidor;
 
