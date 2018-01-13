@@ -24,12 +24,21 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
+
+/*
+* Clase que se encarga de borrar categorías seleccionadas por el usuario y previamente creadas por el mismo.
+*
+* @author  Jose Luis
+* @version 1.0
+*/
+
 public class BorrarCategorias extends AppCompatActivity {
 
+    //Para conectar con la BBDD
     private final BDDHelper miHelper = new BDDHelper(this);
-    //private Button borra ;
+    //Para mostrar texto que indica aún no hay categorías creadas
     private TextView no_categorias;
-    int marka = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,40 +46,36 @@ public class BorrarCategorias extends AppCompatActivity {
         setContentView(R.layout.activity_borrar_categorias);
 
 
-        //borra = (Button)findViewById(R.id.boton_borra);
 
+        //Layout principal de la actividad
         final LinearLayout lm = (LinearLayout) findViewById(R.id.linearLayout);
 
-        // create the layout params that will be used to define how your
-        // button will be displayed
+        //Parámetros del layout para definir la apariencia de los botones
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
 
 
-        //solicitamos titulos a la tabla que venga de la otra activity como 'filtro'
-
+        //Para poder leer datos de la BBDD
         SQLiteDatabase db = miHelper.getReadableDatabase();
 
-        //Bundle datos = getIntent().getExtras();
-
-        //final String nombre_tabla = datos.getString("nombre_tabla");
-
+        //Construir la consulta
         String RAW_QUERY = "SELECT nombre FROM categorias";
-
+        //Ejecutar la consulta
         final Cursor cursor = db.rawQuery(RAW_QUERY,null);
 
         cursor.moveToFirst();
 
+        //Si aún no existen categorías creadas se muestra un TextView indicándolo
         if(cursor.getCount()==0){
             no_categorias = (TextView)findViewById(R.id.texto_no_cat);
             no_categorias.setText(R.string.no_categorias);
         }
 
-        //Creamos elementos dinámicamente
+        //Crear botones dinámicamente,uno para cada categoría
 
         for(int j=0;j<cursor.getCount();j++) {
-            // Create LinearLayout
+            // Crear un LinearLayout para cada botón
             LinearLayout ll = new LinearLayout(this);
             ll.setOrientation(LinearLayout.HORIZONTAL);
             ll.setBackgroundColor(12);
@@ -84,28 +89,35 @@ public class BorrarCategorias extends AppCompatActivity {
                 ll.setBackground(border);
             }*/
 
-            final Button checkBox = new Button(this);
 
-            checkBox.setText(cursor.getString(0));
+           //Crear el boton que reperesenta a una categoría
+            final Button boton = new Button(this);
+            //Darle nombre de la categoría correspondiente
+            boton.setText(cursor.getString(0));
+            //Darle una id
+            boton.setId(j);
+            //Establecer parámetros del Layout
+            boton.setLayoutParams(params);
 
-            checkBox.setId(j);
+            //Log.d("idsboton",""+boton.getId());
 
-            checkBox.setLayoutParams(params);
-
-            Log.d("idsboton",""+checkBox.getId());
-
-            checkBox.setOnClickListener(new View.OnClickListener() {
+            //Poner el botón a la escucha de ser pulsado
+            boton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(getApplicationContext(),"comenzar actividad",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"comenzar actividad",Toast.LENGTH_SHORT).show();
+
+                    //Crear intento para comenzar nueva actividad
                     Intent intent = new Intent(getApplicationContext(),ConfirmarBorradoCategoria.class);
-                    intent.putExtra("nombre_categoria",checkBox.getText().toString());
+                    //Pasarle datos al intento, en concreto el nombre de la categoría a borrar
+                    intent.putExtra("nombre_categoria",boton.getText().toString());
+                    //Iniciar nueva actividad
                     startActivity(intent);
+                    //Terminar actividad actual
                     finish();
 
                 }
             });
-
 
 /*
             Resources resources = getApplicationContext().getResources();
@@ -113,20 +125,25 @@ public class BorrarCategorias extends AppCompatActivity {
             float dp = 25 / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
             float dp_boton = 200 / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
 
-            checkBox.setTextSize(dp);
-            checkBox.setGravity(0);
-            checkBox.setHeight((int) dp_boton);
+            boton.setTextSize(dp);
+            boton.setGravity(0);
+            boton.setHeight((int) dp_boton);
 
+            boton.setLayoutParams(params);*/
 
-            checkBox.setLayoutParams(params);*/
+            //Añadir el botón a la vista
+            ll.addView(boton);
+            //Avanzar a la siguiente fila del resultset, para obtener el siguiente nombre de categoría
             cursor.moveToNext();
-
-            ll.addView(checkBox);
+            //Añadir el layout que contiene el botón al layout principal
             lm.addView(ll);
 
         }
 
+        //Cerrar conexión con la BBDD
         db.close();
+
+
       /*  final Button borra = new Button(this);
         borra.setText("Borrar categorías seleccionadas");
         borra.setOnClickListener(new View.OnClickListener() {
@@ -151,4 +168,5 @@ public class BorrarCategorias extends AppCompatActivity {
 
         lm.addView(borra);*/
     }
-}
+
+}//end of class

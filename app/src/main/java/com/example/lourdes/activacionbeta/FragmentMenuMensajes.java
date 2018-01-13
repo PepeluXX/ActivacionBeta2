@@ -8,9 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
+/*
+* Clase que se encarga de crear un fragmento para insertar un menú en el. NO SE ESTÁ USANDO.
+*
+* @author  Jose Luis
+* @version 1.0
+*/
+
 public class FragmentMenuMensajes extends Fragment {
 
 
@@ -26,4 +30,4 @@ public class FragmentMenuMensajes extends Fragment {
         return inflater.inflate(R.layout.fragment_fragment_menu_mensajes, container, false);
     }
 
-}
+}//end of class

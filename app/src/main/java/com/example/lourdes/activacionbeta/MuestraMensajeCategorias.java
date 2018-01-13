@@ -19,8 +19,20 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+/*
+* Se encarga de mostrar el mensaje seleccionado por el usuario en la lista de categorías. Sigue un proceso
+* muy parecido al método getMensajeFromTodos(int childPositio,String leido_igual_a), con la diferencia
+* de que aquí no se accede directamente al mensaje, sino a la lista de mensajes pertenecientes a esa categoría.
+*
+* @author  Jose Luis
+* @version 1.0
+*
+*/
+
 public class MuestraMensajeCategorias extends AppCompatActivity {
 
+    //Para conectar con la BBDD
     private BDDHelper miHelper = new BDDHelper(this);
 
 
@@ -29,75 +41,84 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_muestra_mensaje_categorias);
 
+        //Layout principal de la actividad
         final LinearLayout lm = (LinearLayout) findViewById(R.id.linearLayout);
 
-        // create the layout params that will be used to define how your
-        // button will be displayed
+        // Crear layout para los botones que se van a crear
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
+        //Recogemos datos del intento
         Bundle datos = getIntent().getExtras();
+        //Para saber que categoría de las existentes ha sido la elegida en el menú desplegado
         int childPosition = Integer.parseInt(datos.getString("childPosition"));
 
-        Toast.makeText(getBaseContext(),"childPosition = "+childPosition,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getBaseContext(),"childPosition = "+childPosition,Toast.LENGTH_SHORT).show();
 
-        //obtenemos la lista de categorías que se devuelve en el mismo orden que en MenuPrincipal
-
+        //Obtener la lista de categorías que se devuelve en el mismo orden que en MenuPrincipal-Por Categorías
         ArrayList<String> categorias = getCategorias();
 
         //conociendo el child pulsado, sabemos la categoría seleccionada, ya que muestran como se devuelven en la consulta
-
         String categoria = categorias.get(childPosition);
 
-        Log.d("CATEGORÍA",categoria);
+        //Log.d("CATEGORÍA",categoria);
 
-        //almacenamos los nombres de las tablas para ir recorriéndolas
-
+        //Almacenar los nombres de las tablas para ir recorriéndolas
         ArrayList<String>nombres_tablas = getNombresTablas();
 
-        //almacenamos los ids de los mensajes pertenecientes a la categoría seleccionada
-
+        //Para almacenar los ids de los mensajes pertenecientes a la categoría seleccionada
         final ArrayList<Integer>ids = new ArrayList<>();
 
-        //para almacenar los nombres de las tablas que contienen mensajes en esa categoría
-
+        //Para almacenar los nombres de las tablas que contienen mensajes en esa categoría y su respectivo contador
         final HashMap<String,ArrayList<Integer>> tabla__contador = new HashMap<>();
 
-        //para relacionar un contador con la id del boton pulsado
-
-       // ArrayList<Integer> lista_contador = new ArrayList<>();
+        //Para relacionar un contador con la id del boton pulsado
         int contador=0;
 
-        //para guardar los titulos de los mensajes y darle texto a los botones
+        //Para guardar los titulos de los mensajes y darle texto a los botones
         final ArrayList<String>titulos = new ArrayList<>();
 
-        //auxiliares con los nombres de las tablas con datos y con los arrays que contienen a contador,
+        //Auxiliares con los nombres de las tablas con datos y con los arrays que contienen a contador,
         // para acceder a HashMap<String,ArrayList<Integer>>
         final ArrayList<String>aux_nombres_tablas = new ArrayList<>();
         final ArrayList<Integer> aux_contador = new ArrayList<>();
 
-
+        //Para conectar con la BBDD
         BDDHelper miHelper = new BDDHelper(getApplicationContext());
+        //Conectamos con la BBDD en modo leer datos
         SQLiteDatabase db = miHelper.getReadableDatabase();
 
-
+        //Recorrer las tablas en busca de mensajes que corresponden a la categoría seleccionada
         for(int i=0;i<nombres_tablas.size();i++){
+            //Crear la consulta
             String query = "SELECT id,titulo FROM '"+nombres_tablas.get(i)+"' WHERE categoria = '"+categoria+"'";
+            //Ejecutar consulta
             Cursor cursor = db.rawQuery(query,null);
             cursor.moveToFirst();
 
+            //Si la tabla que estamos recorriendo contiene mensajes de la categoría seleccionada
             if(cursor.getCount()!=0) {
+                //Guardar el nombre de la tabla
                 String tabla_con_datos = nombres_tablas.get(i);
+                //Crear un Array<Integer> para llevarla cuenta
                 ArrayList<Integer>lista_contador = new ArrayList<>();
-                for (int j = 0; j < cursor.getCount(); j++) {
 
+                //Añadir valores de contador,ids y titulos de los mensajes de esa categoría
+                for (int j = 0; j < cursor.getCount(); j++) {
+                    //Añadir contador
                     lista_contador.add(contador);
+                    //Aumentar contador
                     contador++;
+                    //Añadir id
                     ids.add(cursor.getInt(0));
+                    //Añadir título
                     titulos.add(cursor.getString(1));
+                    //Moverse en el cursor para los resultados siguientes
                     cursor.moveToNext();
                 }
+                //Añadir nombres de tablas
                 aux_nombres_tablas.add(tabla_con_datos);
+                //Añadir nombre de tabla y array contador
                 tabla__contador.put(tabla_con_datos,lista_contador);
             }
         }
@@ -105,11 +126,10 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
             Log.d("LISTA-CONTADOR",""+lista_contador.get(i));
         }*/
 
-        //añadimos los elemenstos dinámicamente
-
+        //Crear botones de manera dinámica, uno para cada mensaje correspondiente a esa categoría
         for( int i = 0; i<ids.size(); i++){
 
-            // Create LinearLayout
+            // Crear LinearLayout que alberga el botón y definir parámetros
             final LinearLayout ll = new LinearLayout(this);
             ll.setOrientation(LinearLayout.HORIZONTAL);
             ll.setBackgroundColor(12);
@@ -123,12 +143,10 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
                 ll.setBackground(border);
             }
 
-            // Create Button
+            // Crear botón y definir parámetros del mismo
             final Button titulo = new Button(this);
-
             titulo.setText(ids.get(i)+". "+titulos.get(i));
             titulo.setId(i);
-
             titulo.setTextColor(ContextCompat.getColor(this, R.color.colorTextoTitulo));
 
             Resources resources = getApplicationContext().getResources();
@@ -142,31 +160,27 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
 
             titulo.setLayoutParams(params);
 
-            // Set click listener for button
+            //Poner el botón a la escucha
             titulo.setOnClickListener(new View.OnClickListener() {
+
                 public void onClick(View v) {
 
-                    Toast.makeText(getApplicationContext(),"hola desde aqui",Toast.LENGTH_SHORT).show();
-                   /* Intent intent = new Intent(getBaseContext(),MuestraMensaje.class);
-                    intent.putExtra("titulo",titulo.getText().toString());
-                    intent.putExtra("nombre_tabla",nombre_tabla);
-                    intent.putExtra("id_mensaje",titulo.getId());
-                    startActivity(intent);
-                    finish();*/
-
+                   //Recoger id del botón pulsado
                    int boton_pulsado = titulo.getId();
-
+                   //Para ir pasándole los distintos arrays contador
                    ArrayList<Integer>aux_contador = new ArrayList<>();
+                   //Para el nombre de la tabla en la que se encuentra el mensaje que se quiere mostrar
                    String nombre_tabla_final="";
+                   //La id del mensaje que se va a mostrar
                    int id=0;
 
+                   //Recorrer las tablas en busca del mensaje
                    for(int j=0;j<aux_nombres_tablas.size();j++){
-                       Log.d("BOTONPULSADO-tablasize",""+aux_nombres_tablas.size());
+                       //Pasar el array contador al auxiliar
                         aux_contador = tabla__contador.get(aux_nombres_tablas.get(j));
-                       Log.d("BOTONPULSADO-tablaname",""+aux_nombres_tablas.get(j));
+                       //Recorrer el contador para comparar con el botón pulsado
                         for(int d = 0;d < aux_contador.size();d++) {
-                            Log.d("BOTONPULSADO-CONTADOR",""+aux_contador.get(d));
-                            Log.d("BOTONPULSADO-CONTASIZE",""+aux_contador.size());
+                            //Si coincide, tenemos nombre de tabla e id del mensaje a mostrar
                             if (aux_contador.get(d) == boton_pulsado) {
                                 nombre_tabla_final = aux_nombres_tablas.get(j);
                                 id = ids.get(boton_pulsado);
@@ -174,46 +188,52 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
                             }
                         }
                    }
-                       String titulo_mensaje = titulos.get(boton_pulsado);
-                    Log.d("BOTONPULSADO-ID"," "+id);
-                        Log.d("BOTONPULSADO",""+boton_pulsado);
-                    Log.d("BOTONPULSADO-TITULO",""+titulo_mensaje);
-                    Log.d("BOTONPULSADO-TABLA",""+nombre_tabla_final);
 
-                        Intent intent = new Intent(getApplicationContext(),MuestraMensaje.class);
-                        intent.putExtra("nombre_tabla","'"+nombre_tabla_final+"'");
-                        intent.putExtra("id_mensaje",id);
-                        intent.putExtra("titulo",titulo_mensaje);
-                        startActivity(intent);
-                        finish();
+                    //Recoger el titulo del mensaje a mostrar
+                    String titulo_mensaje = titulos.get(boton_pulsado);
 
-
-
-
+                    //Crear intento para iniciar nueva actividad
+                    Intent intent = new Intent(getApplicationContext(),MuestraMensaje.class);
+                    //Añadir datos al intento para que los use la nueva actividad que se va a iniciar
+                    intent.putExtra("nombre_tabla","'"+nombre_tabla_final+"'");
+                    intent.putExtra("id_mensaje",id);
+                    intent.putExtra("titulo",titulo_mensaje);
+                    //Comenzar nueva actividad
+                    startActivity(intent);
+                    //Terminar actividad actual
+                    finish();
                 }
             });
 
+            //Añadir botón al layout
             ll.addView(titulo);
-
-
+            //Añadir layout al layout principal
             lm.addView(ll);
 
 
         }
     }
 
+    /*
+    * Devuelve los nombres de las categorías creadas por el usuario.
+    *
+    * @return categorias un ArrayList<String> conteniendo los nombres de las categorías.
+    *
+    * */
+
     public ArrayList<String> getCategorias(){
 
+        //Para almacenar las diferentes categorías
         ArrayList<String>categorias = new ArrayList<>();
-        // categorias.add("Crear categoría");
-
+        //Para leer de la BBDD
         SQLiteDatabase db = miHelper.getReadableDatabase();
-
-
+        //Crear consulta
         String RAW_QUERY = "SELECT nombre FROM categorias";
+        //Ejecutar consulta
         Cursor cursor = db.rawQuery(RAW_QUERY,null);
         cursor.moveToFirst();
 
+        //Recoger resultados del resultset
         for(int i=0; i<cursor.getCount();i++){
             categorias.add(cursor.getString(0));
             cursor.moveToNext();
@@ -222,35 +242,37 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
     }
 
 
+    /*
+   * Devuelve los nombres de las tablas de la BBDD descartando los de las tablas que no necesita.
+   *
+   * @return nombres_tablas un Array<String> conteniendo los nombres de las tablas.
+   *
+   * */
     public ArrayList<String> getNombresTablas(){
 
+        //Para conectar con la BBDD
         SQLiteDatabase db = miHelper.getReadableDatabase();
-
-        ArrayList<String> nombres_tablas_aux = new ArrayList<>();
+        //Para almacenar los nombres de las tablas
         ArrayList<String> nombres_tablas = new ArrayList<>();
-
-        //tomamos los nombres de las tablas descartando las que no queremos : tokens y android_metadata
-
+        //Para almacenar sólo los nombres de las tablas que se van a usar
+        ArrayList<String> nombres_tablas_aux = new ArrayList<>();
+        //Construir consulta
         String RAW_QUERY = "SELECT name FROM sqlite_master WHERE type='table'";
-
-
+        //Ejecutar consulta
         Cursor cursor = db.rawQuery(RAW_QUERY,null);
 
         cursor.moveToFirst();
 
+        //Recorrer el resultado de la consulta y descartar los nombres de las tablas que no vamos a utilizar
         for(int i=0;i<cursor.getCount();i++) {
-
 
             String resultado = cursor.getString(0);
 
             nombres_tablas_aux.add(resultado);
 
-            // Toast.makeText(getApplicationContext(), "RESULTADO = " + resultado, Toast.LENGTH_SHORT).show();
-
             cursor.moveToNext();
         }
-
-        //descarto las tablas que no quiero incluir en los resultados
+        //Descartar las tablas que no quiero incluir en los resultados
 
         for (int i=0;i<nombres_tablas_aux.size();i++){
 
@@ -260,13 +282,14 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
                 nombres_tablas.add(nombres_tablas_aux.get(i));
             }
         }
-
+        //Cerrar conexión con la BBDD
         db.close();
 
         return nombres_tablas;
     }
 
 
+    //Define las acciones a realizar cuando se pulsa el botón 'Atrás' en el dispositivo
     public void onBackPressed() {
         Intent intent = new Intent(this,MenuPrincipal.class);
         //intent.putExtra("nombre_tabla",datos.getString("nombre_tabla"));
@@ -275,4 +298,5 @@ public class MuestraMensajeCategorias extends AppCompatActivity {
 
         super.onBackPressed();
     }
-}
+
+}//end of class

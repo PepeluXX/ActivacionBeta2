@@ -11,9 +11,15 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by Lourdes on 13/12/2017.
- */
+/*
+* Clase en la que se crea el menú principal de la aplicación. Muestra un menú con filas
+* desplegables. Al pulsar sobre los hijos desplegados se accede o bien a listas de mensajes o directamente
+* al mensaje seleccionado
+*
+* @author  Jose Luis
+* @version 1.0
+* @since   12/01/2018
+*/
 
 public class AdaptadorFiltrosPrincipalesVE  extends BaseExpandableListAdapter{
 

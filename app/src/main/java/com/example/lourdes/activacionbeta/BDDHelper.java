@@ -4,9 +4,13 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by Lourdes on 07/12/2017.
- */
+/*
+* Clase que se encarga crear la BBDD y de las conexiones con la misma.
+*
+* @author  Jose Luis
+* @version 1.0
+* @since   7/12/2017
+*/
 
 public class BDDHelper extends SQLiteOpenHelper{
 
