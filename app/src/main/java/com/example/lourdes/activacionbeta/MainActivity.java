@@ -30,16 +30,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * La clase MainActivity es por donde comienza la aplicación. Muestra un formulario a rellenar.
+ * Si los datos insertados son correctos. Dicho formulario no se presenta más.
+ *
+ * @author  Jose Luis
+ * @version 1.0
+ * @since   12/01/2018
+ */
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    //private TextView textViewToken;
+    //campos de texto para el DNI y el Password
     private EditText editTextDNI,editTextPassword;
+
+    //Botón para el envío del formulario
     private Button botonRegistro;
-    private String marka;
+
+    //URL a la que conectar para enviar los datos
     private static final String URL_REGISTRO_TOKEN= "https://www.portaldedesarrollo.com/TokenRegistration.php";
 
+    //Cadena de texto para almacenar el mensaje respuesta del servidor
     String respuesta_servidor;
 
+    //Objeto de clase para acceder a la BBDD SQLite
     final BDDHelper mDbHelper = new BDDHelper(this);
 
 
@@ -48,11 +63,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //textViewToken = (TextView)findViewById(R.id.textViewToken);
+        //Se recogen los elementos del layout
         editTextDNI = (EditText) findViewById(R.id.editTextDNI);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         botonRegistro = (Button)findViewById(R.id.botonRegistro);
 
+        //Se recoge el token, que se crea cuando se inicia la aplicación por primera vez
         String token = SharedPrefManager.getInstance(this).getToken();
 
 
@@ -94,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 //si el registro ya se produjo, pasamos al menú principal de gestión de mensajes
 
-                Toast.makeText(this,"La BD existe", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this,"La BD existe", Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(this,MenuPrincipal.class);
 
@@ -115,56 +131,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    //sobre escritura del método onClick()
+
+    @Override
+    public void onClick(View view) {
+        if(view == botonRegistro){
+            registraToken();
+        }
+    }
 
 
-    //Función registraToken se encarga de conectar con el portal web y, si el usuario se encuentra previamente registrado en el portal,
-    //se registra el token en la BBDD, si dicho registro se produce con éxito, entonces se guarda el token también en la BBDD de la aplicación, para
-    //la posterior comprobación y para que así el formulario de inicio no vuelva a mostrarse en posteriores ejecuciones de la aplicación
+
+
+    /*
+    *Se encarga de conectar con el portal web y, si el usuario se encuentra previamente registrado en el portal,
+    *se registra el token en la BBDD del portal, si dicho registro se produce con éxito, entonces se guarda el token también en la BBDD de la aplicación, para
+    *la posterior comprobación y para que así el formulario de inicio no vuelva a mostrarse en posteriores ejecuciones de la aplicación
+    */
+    // NOTAS: ¿Guardar el token o guardar simplemente un booleano o un entero, al final cuando comienza la aplicación lo único que se hace
+    //es comprobar si ya existe un registro.
 
     public void registraToken(){
 
         //se recogen los datos insertados por el usuario
-
         final String dni = editTextDNI.getText().toString().trim();
         final String password = editTextPassword.getText().toString().trim();
 
-        //se comprueba que el usuario ha rellenado los campos
-
+        //se comprueba que el usuario ha rellenado los campos. Se obliga a que rellene ambos campos para seguir.
         if(TextUtils.isEmpty(dni) || TextUtils.isEmpty(password)){
+
             Toast.makeText(this,"Por favor rellene los campos necesarios", Toast.LENGTH_LONG).show();
-
-
         }
-        //se comprueba si el token fue generado y guardado
+        //Si se han insertado valores para usuario y password, se crea petición POST para enviar al servidor
         else{
+
             if(SharedPrefManager.getInstance(this).getToken() != null){
 
-
-                //se configura la petición POST que vamos a enviarle al portal web
+                //Configurar la petición POST que vamos a enviarle al servidor. Se crea un objeto de la clase StringRequest al que se
+                //le pasa para crearlo el método de la petición, la URL, un método que describe las acciones a realizar cuando se obtiene una
+                //respuesta del servidor y el método con acciones a realizar cuando se recibe un error (se recibe null)
 
                 StringRequest stringRequest = new StringRequest(
 
+                        //el método de la petición
                         Request.Method.POST,
 
+                        //La URL del servidor
                         URL_REGISTRO_TOKEN,
 
+                        //Acciones a realizar si se obtiene una respuesta del servidor
                         new Response.Listener<String>() {
-
-                            //se configuran las acciones a realizar cuando se obtiene una respuesta desde el portal web
 
                             @Override
                             public void onResponse(String response) {
 
                                 try{
+
+                                    //Almacena toda la respuesta del servidor a la petición
                                     JSONObject obj = new JSONObject(response);
 
+                                    //En 'message' se encuentra el código que indica el resultado de la petición
                                     respuesta_servidor = obj.getString("message");
 
-                                    Toast.makeText(getApplicationContext(),obj.getString("message"),Toast.LENGTH_LONG).show();
+                                    //Si el token y los datos de usuario se han registrado correctamente en el portal
 
-                                    //¿Se ha registrado correctamente el token en la BBDD del portal web?
+                                    if(respuesta_servidor.equals("OK")) {
 
-                                    if(respuesta_servidor.equals("Token registrado ok")) {
+                                        Toast.makeText(getApplicationContext(),obj.getString("Token registrado OK"),Toast.LENGTH_LONG).show();
 
                                         //comienza la inserción del token en la BBDD sqlite
 
@@ -175,33 +208,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         ContentValues values = new ContentValues();
 
                                         values.put(EstructuraBDD.COLUMNA_ID, "1");
-                                        values.put(EstructuraBDD.COLUMNA_TOKEN, SharedPrefManager.getInstance(getApplicationContext()).getToken());
+                                        values.put(EstructuraBDD.COLUMNA_TOKEN, SharedPrefManager.getInstance(getApplicationContext()).getToken()); // o guadar otra cosa, lo importante es que ya se registró bien en el portal
 
-                                        // Se inserta la nueva fila y se devuelve el valor de la clave primaria (id) de la nueva fila insertada, en caso de error devolverá -1
+                                        // Se inserta la nueva fila y se devuelve el valor de la clave primaria (id) de la nueva fila insertada,
+                                        // en caso de error devolverá -1
 
                                         long newRowId = db.insert(EstructuraBDD.TABLE_NAME, null, values);
 
+                                        //si el token se ha guardado correctamente
                                         if(newRowId != -1) {
-                                            Toast.makeText(getApplicationContext(), "Se guardó el registro con clave: " +
-                                                    newRowId, Toast.LENGTH_LONG).show();
 
-
+                                          /*  Toast.makeText(getApplicationContext(), "Se guardó el registro con clave: " +
+                                                    newRowId, Toast.LENGTH_LONG).show();*/
                                             //textViewToken.setText(SharedPrefManager.getInstance(getApplicationContext()).getToken());
 
 
-                                            //creamos las tablas necesarias, una para cada hijo
+                                            //Se crean las tablas necesarias, una para cada hijo
 
+                                            //Se recogen los datos enviados en la respuesta del servidor
                                             String nombres_hijos = obj.getString("nombres_hijos");
-                                            nombres_hijos = nombres_hijos.replace(" ","_"); //para nombres compuestos, ya que los nombres de las tablas no aceptan espacios en blanco
+                                            //se adapta para nombres compuestos, ya que los nombres de las tablas no aceptan espacios en blanco
+                                            nombres_hijos = nombres_hijos.replace(" ","_");
 
-                                            Toast.makeText(getApplicationContext(), "nombres_hijos: " +
-                                                    nombres_hijos, Toast.LENGTH_LONG).show();
 
-                                            //String nombres_hijos = "Nerea,Antonio";
+                                            /*Toast.makeText(getApplicationContext(), "nombres_hijos: " +
+                                                    nombres_hijos, Toast.LENGTH_LONG).show();*/
 
-                                            //int count = nombres_hijos.length() - nombres_hijos.replace(",", ",").length();
-                                            int count = 0;
+
+                                            //Para contar las ocurrencias de ','
+                                            //cambiar por:
+                                            // int count = StringUtils.countMatches(nombres_hijos,",");
+                                            int count=0;
                                             String aux = "";
+
+                                            //Los nombres de los hijos vienen desde el servidor en un String y separados por ','
+                                            //se cuentan las ocurrencias y +1 es el número de hijos.
 
                                             for (int i=0; i < nombres_hijos.length(); i++) {
 
@@ -214,8 +255,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             }
                                             count+=1;
 
-                                            Toast.makeText(getApplicationContext(),"Count ="+count,Toast.LENGTH_SHORT).show();
+                                           //Almacenar los nombres en un Array para ir recorriendo y creando tablas en cada iteración
                                             String [] array_nombres = new String[count];
+                                           //Para contar las posiciones del array
                                             int i1 =0;
 
                                             while(!nombres_hijos.equals("")){
@@ -225,27 +267,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                 // true si sólo un hijo
 
                                                 if(nombres_hijos.indexOf(",")==-1){
+
+                                                    //Se guarda el nombre en el array...
                                                     array_nombres[i1] = nombres_hijos;
+                                                    //... y adaptamos la condición necesaria para salir del while
                                                     nombres_hijos="";
-                                                    Toast.makeText(getApplicationContext(),"array_nombres["+i1+"] = "+array_nombres[i1],Toast.LENGTH_LONG).show();
+
+                                                    //Toast.makeText(getApplicationContext(),"array_nombres["+i1+"] = "+array_nombres[i1],Toast.LENGTH_LONG).show();
                                                 }
+                                                //Si hay más de un hijo
                                                 else{
+
+                                                    //Recoger primer nombre
                                                     String nombre_aux = nombres_hijos.substring(0,nombres_hijos.indexOf(","));
-
-                                                    Toast.makeText(getApplicationContext(),"nombre_aux = "+nombre_aux,Toast.LENGTH_LONG).show();
-
+                                                    //Guardar nombre en el array
                                                     array_nombres[i1] = nombre_aux;
-
+                                                    //Readaptar el nombre para la siguiente iteración
                                                     nombres_hijos = nombres_hijos.substring(nombres_hijos.indexOf(",")+1,nombres_hijos.length());
-
-                                                    Toast.makeText(getApplicationContext(),"array_nombres["+i1+"] = "+array_nombres[i1],Toast.LENGTH_LONG).show();
-
+                                                    //Para pasar a la siguiente posición del array
                                                     i1++;
                                                 }
-                                            }
-                                            for(int i = 0;i<array_nombres.length;i++){
 
+                                            }//end while
+
+                                            //Crear una tabla por cada hijo para almacenar los mensajes destinados a ellos
+                                            for(int i = 0;i<array_nombres.length;i++){
+                                                //Crear consulta
                                                 String CREA_TABLA_HIJO =
+                                                        //Añadir 'hijo-' y '!' para luego facilitar la consulta de tablas, facilitando reconocer si es tabla de mensajes para hijo
                                                         "CREATE TABLE 'hijo-" + array_nombres[i]+ "!' (" +
                                                                  "id INTEGER PRIMARY KEY," +
                                                                  "autor TEXT," +
@@ -257,22 +306,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                                                 try {
+                                                    //Se ejecuta la consulta para la creación de la tabla
                                                     db.execSQL(CREA_TABLA_HIJO);
-
                                                 } catch (Exception e) {
                                                     Toast.makeText(getApplicationContext(), "Fallo al crear la tabla " + array_nombres[i], Toast.LENGTH_SHORT).show();
                                                 }
                                             }
 
-                                            //creamos tablas para los mensajes destinados a un curso completo
+                                            //Crear tablas para los mensajes destinados a un curso completo:
 
+                                            //Recoger de la respuesta del servidor los cursos de los hijos
                                             String cursos_hijos = obj.getString("cursos_hijos");
-                                            cursos_hijos = cursos_hijos.replace(" ","_"); // para evitar espacios en blanco en el nombre de la tabla
+                                            // para evitar espacios en blanco en el nombre de la tabla
+                                            cursos_hijos = cursos_hijos.replace(" ","_");
 
+
+                                            //Esto también debería de reducirlo
                                             int count2 = 0;
-
                                             String aux2 = "";
-
 
                                             for (int  i=0; i < cursos_hijos.length(); i++) {
 
@@ -284,35 +335,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             }
                                             count2+=1;
 
+                                            //Para almacenar los nombres de los cursos
                                             String [] array_cursos = new String[count2];
+                                            //Para las posiciones del array
                                             int i2 =0;
 
                                             while(!cursos_hijos.equals("")){
 
                                                 //true si sólo un  curso
-
                                                 if(cursos_hijos.indexOf(",")==-1){
+                                                    //Guardar nombre del curso
                                                     array_cursos[i2] = cursos_hijos;
+                                                    //Adaptar la condición para salir del while
                                                     cursos_hijos="";
-                                                    Toast.makeText(getApplicationContext(),"array_cursos["+i2+"] = "+array_cursos[i2],Toast.LENGTH_SHORT).show();
+                                                   //Toast.makeText(getApplicationContext(),"array_cursos["+i2+"] = "+array_cursos[i2],Toast.LENGTH_SHORT).show();
                                                 }
                                                 else{
+                                                    //Recoger nombre del curso
                                                     String curso_aux = cursos_hijos.substring(0,cursos_hijos.indexOf(","));
 
-                                                    Toast.makeText(getApplicationContext(),"curso_aux = "+curso_aux,Toast.LENGTH_SHORT).show();
+                                                    //Toast.makeText(getApplicationContext(),"curso_aux = "+curso_aux,Toast.LENGTH_SHORT).show();
 
+                                                    //Guardar nombre del curso
                                                     array_cursos[i2] = curso_aux;
-
+                                                    //Adaptar el String para la siguiente iteración
                                                     cursos_hijos = cursos_hijos.substring(cursos_hijos.indexOf(",")+1,cursos_hijos.length());
 
-                                                    Toast.makeText(getApplicationContext(),"array_cursos["+i2+"] = "+array_cursos[i2],Toast.LENGTH_LONG).show();
+                                                   // Toast.makeText(getApplicationContext(),"array_cursos["+i2+"] = "+array_cursos[i2],Toast.LENGTH_LONG).show();
 
+                                                    //Avanzar posición en el array
                                                     i2++;
                                                 }
+
                                             }//end while
 
+                                            //Crear tablas, una para cada curso de cada hijo
                                             for(int i = 0;i<array_cursos.length;i++){
-
+                                                //Crear consulta para la creación de la tabla
                                                 String CREA_TABLA_CURSOS =
                                                         "CREATE TABLE 'curso-" + array_cursos[i]+ "!' (" +
                                                                 "id INTEGER PRIMARY KEY," +
@@ -322,17 +381,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                                 "mensaje TEXT," +
                                                                 "leido INTEGER," +
                                                                 "categoria TEXT)";
-
-
                                                 try {
+                                                    //Ejecutar consulta
                                                     db.execSQL(CREA_TABLA_CURSOS);
-
                                                 } catch (Exception e) {
                                                     Toast.makeText(getApplicationContext(), "Fallo al crear la tabla " + array_cursos[i], Toast.LENGTH_SHORT).show();
                                                 }
                                             }
 
-                                            //creamos tabla para avisos generales del centro
+                                            //Crear tabla para avisos generales del centro
 
                                             String CREA_TABLA_GENERAL =
                                                     "CREATE TABLE general (" +
@@ -347,12 +404,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                             try {
                                                 db.execSQL(CREA_TABLA_GENERAL);
-
                                             } catch (Exception e) {
                                                 Toast.makeText(getApplicationContext(), "Fallo al crear la tabla general" , Toast.LENGTH_SHORT).show();
                                             }
 
-                                            //creamos la tabla categorias
+                                            //Crear la tabla categorias
                                             String CREA_TABLA_CATEGORIAS =
                                                     "CREATE TABLE categorias (" +
                                                             "id INTEGER PRIMARY KEY," +
@@ -361,24 +417,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                             try {
                                                 db.execSQL(CREA_TABLA_CATEGORIAS);
-
                                             } catch (Exception e) {
                                                 Toast.makeText(getApplicationContext(), "Fallo al crear la tabla general" , Toast.LENGTH_SHORT).show();
                                             }
 
+                                            //Cerrar conexión con la BBDD
                                             db.close();
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                            //Se crea un intento para abandonar esta activity y pasar a activity MenuPrincipal
                                             Intent intent = new Intent(getApplicationContext(), MenuPrincipal.class);
-
+                                            //Comenzar nueva actividad MenuPrincipal
                                             startActivity(intent);
-
+                                            //Finalizar activity actual
                                             finish();
-                                        }
+
+                                        }//end if
+                                        //Si la inserción del token en la BBDD SQLite ha fallado
                                         else{
                                             Toast.makeText(getApplicationContext(), "Ha fallado la inserción del token en la BBDD SQLite y la creación de tablas", Toast.LENGTH_LONG).show();
                                         }
 
-                                    }else{Toast.makeText(getApplicationContext(),"El registro del token en el portal web ha fallado",Toast.LENGTH_LONG).show();}
+                                    }//end if
+                                    //Si el servidor devuelve un error en el registro de los datos
+                                    else{
+                                        Toast.makeText(getApplicationContext(),"El registro en el portal web ha fallado.",Toast.LENGTH_LONG).show();
+                                    }
 
                                 }catch(JSONException e){
 
@@ -386,50 +451,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                             }
                         },
-                        //recogemos cualquier fallo que ocurra al realizar la petición POST al portal web
+                        //Si no se ha podido conectar con el servidor
 
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(getApplicationContext(),error.getMessage()+"mensajote",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(),"No se ha podido conectar con el servidor. Respuesta = "+error.getMessage(),Toast.LENGTH_LONG).show();
                             }
                         }
                 ){
 
-                    //se configuran los parámetros de la petición POST
+                    //Configurar los parámetros de la petición POST:
 
+                    //Sobreescribir método getParams() de la clase StrinRequest
                     @Override
                     protected Map<String,String> getParams() throws AuthFailureError {
-
+                        //Crear mapa de valores
                         Map<String,String> params = new HashMap<>();
-
+                        //Añadir token
                         params.put("token",SharedPrefManager.getInstance(getApplicationContext()).getToken());
+                        //Añadir dni
                         params.put("dni",dni);
+                        //Añadir password
                         params.put("password",password);
 
                         return params;
                     }
                 };
 
-                //una vez configurados la petición, la añadimos a la queue
+                //Una vez configurada la petición, la añadimos a la queue
 
                 RequestQueue requestQueue = Volley.newRequestQueue(this);
 
                 requestQueue.add(stringRequest);
 
-            }else{
-                Toast.makeText(this,"Token not generated",Toast.LENGTH_LONG).show();
             }
-        }
+            //Si la asignación de token en los servidores FCM de Google ha fallado
+            else{
+                Toast.makeText(this,"El Token no se ha generado.",Toast.LENGTH_LONG).show();
+            }
+        }//end of else, el que se ejecutaba si la validación del formulario era correcta (se habían insertado valores y se habían mandado al servidor)
 
-    }
+    }//end of registraToken()
 
-    //sobre escritura del método onClick()
 
-    @Override
-    public void onClick(View view) {
-        if(view == botonRegistro){
-            registraToken();
-        }
-    }
-}
+}//end of class

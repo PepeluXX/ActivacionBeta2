@@ -24,7 +24,7 @@ public class InstanciacionIDServicioFirebase extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d("ACTIVACION_BETA", "Refreshed token: " + refreshedToken);
+        Log.d("ACTIVA", "Refreshed token: " + refreshedToken);
 
 
         // If you want to send messages to this application instance or
