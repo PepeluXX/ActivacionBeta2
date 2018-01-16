@@ -192,12 +192,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                     //En 'message' se encuentra el código que indica el resultado de la petición
                                     respuesta_servidor = obj.getString("message");
-
+                                    Toast.makeText(getApplicationContext(),"Respuesta servidor = "+respuesta_servidor,Toast.LENGTH_LONG).show();
                                     //Si el token y los datos de usuario se han registrado correctamente en el portal
 
                                     if(respuesta_servidor.equals("OK")) {
 
-                                        Toast.makeText(getApplicationContext(),obj.getString("Token registrado OK"),Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(),"Token registrado OK",Toast.LENGTH_LONG).show();
 
                                         //comienza la inserción del token en la BBDD sqlite
 
